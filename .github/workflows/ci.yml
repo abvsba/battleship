@@ -12,7 +12,6 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - run: npm run-script build-prod  # package.json -> "scripts"
       - name: SonarCloud Scan
         if: success()
         uses: SonarSource/sonarcloud-github-action@master # file: sonar-project.properties
