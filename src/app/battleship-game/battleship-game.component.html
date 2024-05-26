@@ -1,0 +1,37 @@
+
+<div class="table-container-self">
+  <table #self>
+    <tr *ngFor="let row of rowList">
+      <td *ngFor="let col of colList"
+          #self_cell
+          class="board-td"
+          (drop)="onDrop($event, row, col)"
+          (dragover)="onDragOver($event)"
+          [attr.data-x]="row"
+          [attr.data-y]="col"
+          [ngClass]="{'prueba': selfBoard.cell[row][col].hasShip()}">
+      </td>
+    </tr>
+  </table>
+
+  <div>
+    <div onKeyDown *ngFor="let ship of selfShipList; let i = index"
+         #ship_self
+         [id]="ship.type"
+         class='ship'
+         draggable="true"
+         [style.width.px]="ship.length * 40"
+         [style.left.px]="50"
+         [style.top.px]="i*50 + 450"
+         [ngClass]="{'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
+
+         (dragstart)="onDragStart(ship)"
+         (dragover)="onDragOver($event)">
+
+      <div *ngFor="let _ of Array(ship.length); let j = index"
+           id="{{j}}"
+           class='ship-block'
+           [ngClass]="{'last-ship-block': j == ship.length - 1 }"
+           (mousedown)="onMouseDown(j)"></div>
+    </div>
+  </div>
