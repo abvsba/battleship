@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.2.
 
+## Code Status
+[![CI](https://github.com/abvsba/battleship-angular/actions/workflows/ci.yml/badge.svg)](https://github.com/abvsba/battleship-angular/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=abvsba_battleship-angular&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=abvsba_battleship-angular)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
