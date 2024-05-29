@@ -101,6 +101,17 @@ export class BattleshipGameComponent implements AfterViewInit{
     return true;
   }
 
+  onClickCell(event: Event, row: number, col: number) {
+    const cell = this.rivalBoard.cell[row][col];
+    let cellHTML = event.target as HTMLElement;
+
+    if (cell.hasShip()) {
+      cellHTML.classList.add('disableClick', 'boom');
+    } else {
+      cellHTML.classList.add('disableClick', 'miss')
+    }
+  }
+
   onDrop(event: DragEvent, row: number, col: number) {
 
       const initialCol = col - this.selectedDiv;

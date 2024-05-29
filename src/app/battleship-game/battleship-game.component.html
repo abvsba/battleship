@@ -47,6 +47,7 @@
           <td *ngFor="let col of colList"
               #rival_cell
               class="board-td"
+              (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
               [ngClass]="{'prueba': rivalBoard.cell[row][col].hasShip()}">
