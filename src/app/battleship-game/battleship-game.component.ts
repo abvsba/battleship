@@ -17,6 +17,8 @@ export class BattleshipGameComponent implements AfterViewInit{
   mapShipSelf = new Map();
   mapShipRival = new Map();
 
+  mapShipHit: Map<Ship, number> = new Map();
+
   cellWidth = 40;
   selfBoard = new Board();
   rivalBoard = new Board();
@@ -44,6 +46,8 @@ export class BattleshipGameComponent implements AfterViewInit{
       this.mapShipRival.set(this.rivalShipList[i], this.listShipRival.get(i)!.nativeElement);
 
       this.mapShipSelf.set(this.selfShipList[i].type, this.listShipSelf.get(i)!.nativeElement);
+
+      this.mapShipHit.set(this.rivalShipList[i], 0);
     }
   }
 
@@ -103,13 +107,29 @@ export class BattleshipGameComponent implements AfterViewInit{
 
   onClickCell(event: Event, row: number, col: number) {
     const cell = this.rivalBoard.cell[row][col];
+    const ship = cell.ship!;
     let cellHTML = event.target as HTMLElement;
 
     if (cell.hasShip()) {
       cellHTML.classList.add('disableClick', 'boom');
+      this.mapShipHit.set(ship, this.mapShipHit.get(ship)! + 1);
+      if (ship.length === this.mapShipHit.get(ship)) {
+        this.showShipWhenAllHit(ship);
+      }
     } else {
       cellHTML.classList.add('disableClick', 'miss')
     }
+  }
+
+  showShipWhenAllHit(ship: Ship) {
+    for (let i = 0; i < ship.length; i++) {
+      if (ship?.isHorizontal) {
+        this.listRivalCell.get(ship.head!.row * 10 + ship.head!.col + i)?.nativeElement.classList.remove('boom');
+      } else {
+        this.listRivalCell.get(ship.head!.row * 10 + ship.head!.col + 10 * i)?.nativeElement.classList.remove('boom');
+      }
+    }
+    ship.isVisible = true;
   }
 
   onDrop(event: DragEvent, row: number, col: number) {
