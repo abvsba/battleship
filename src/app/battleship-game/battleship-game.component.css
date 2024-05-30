@@ -1,10 +1,12 @@
-
-
 table {
   position: relative;
   width: 401px;
   height: 401px;
   border-collapse: collapse;
+}
+
+.rival-table{
+  position: relative;
 }
 
 .table-container {
@@ -56,4 +58,47 @@ table {
 
 .cursor {
   cursor : move;
+}
+
+.hide-ship {
+  visibility: hidden;
+}
+
+.miss,
+.boom {
+  position: relative;
+}
+
+.boom::after,
+.miss::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: '';
+  position: absolute;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+
+.miss::after {
+  background-color: white;
+}
+
+.boom::after {
+  background-color: red;
+  animation: boom .3s ease-out forwards;
+}
+
+@keyframes boom {
+  0% {
+    background-color: white;
+  }
+  100% {
+    background-color: red;
+  }
+}
+
+.disableClick {
+  pointer-events: none;
 }
