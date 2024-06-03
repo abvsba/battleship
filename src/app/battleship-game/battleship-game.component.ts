@@ -12,6 +12,7 @@ import {Coordinate} from "../../shared/models/coordinate.model";
 export class BattleshipGameComponent implements AfterViewInit{
   @ViewChildren('ship_self') listShipSelf!: QueryList<ElementRef>;
   @ViewChildren('ship_rival') listShipRival!: QueryList<ElementRef>;
+  @ViewChildren('self_cell') listSelfCell!: QueryList<ElementRef>;
   @ViewChildren('rival_cell') listRivalCell!: QueryList<ElementRef>;
 
   mapShipSelf = new Map();
@@ -93,6 +94,40 @@ export class BattleshipGameComponent implements AfterViewInit{
       cellHTML.classList.add('disableClick', 'miss')
     }
   }
+
+
+  onDropOnTopOfShip(event: DragEvent) {
+    this.onDropOnShip = true;
+    let ship = this.selectedShip;
+    let div = event.target as HTMLElement;
+
+    if (this.selectedShip.type === (div.parentNode as HTMLElement).id) {
+
+      let dropInDiv = +(div).id;
+      const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
+      let isHorizontal = this.selectedShip.isHorizontal;
+
+      const row = isHorizontal ? ship.head!.row : ship.head!.row + dropInDiv - this.selectedDiv;
+      const col = isHorizontal ? ship.head!.col + dropInDiv - this.selectedDiv : ship.head!.col;
+
+      if (this.assertThereIsNoOverlap(this.selfBoard, new Cell(row, col), true)) {
+        ship.oldHead = new Cell(ship.head!.row, ship.head!.col);
+
+        if (isHorizontal) {
+          shipHTML.style.left = `${parseInt(shipHTML.style.left) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+          ship.head!.col = col;
+        } else {
+          shipHTML.style.top = `${parseInt(shipHTML.style.top) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+          ship.head!.row = row;
+        }
+
+        this.emptyOrFillCellsWithShips(this.selfBoard, ship.oldHead, ship.head);
+        const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+        cellHTML.appendChild(shipHTML);
+      }
+    }
+  }
+
 
 
   positionShipRandomly() {
