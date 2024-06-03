@@ -140,7 +140,7 @@ export class BattleshipGameComponent implements AfterViewInit{
 
       const head = new Cell(+row, +col);
       this.selectedShip = this.rivalShipList[ship];
-      const shipHTML = this.mapShipRival.get(this.selectedShip);
+      const shipHTML = this.mapShipRival.get(this.selectedShip.type);
 
       if (Math.random() < 0.5) {
         this.selectedShip.isHorizontal = false;
