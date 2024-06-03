@@ -1,6 +1,6 @@
 <div class="table-container">
   <div class="table-container-self">
-    <table #self>
+    <table>
       <tr *ngFor="let row of rowList">
         <td *ngFor="let col of colList"
             #self_cell
@@ -26,7 +26,8 @@
            [ngClass]="{'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
            (dragstart)="onDragStart(ship)"
-           (dragover)="onDragOver($event)">
+           (dragover)="onDragOver($event)"
+           (drop)="onDropOnTopOfShip($event)">
 
         <div *ngFor="let _ of Array(ship.length); let j = index"
              id="{{j}}"
@@ -42,9 +43,9 @@
   <div class="rival-table">
 
     <div [ngClass]="{'overlay': false}">
-      <table #rival>
+      <table>
         <tr *ngFor="let row of rowList">
-          <td *ngFor="let col of colList"
+          <td onKeyDown *ngFor="let col of colList"
               #rival_cell
               class="board-td"
               (click)="onClickCell($event, row, col)"
