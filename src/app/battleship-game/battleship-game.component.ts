@@ -17,17 +17,16 @@ export class BattleshipGameComponent implements AfterViewInit{
   mapShipSelf = new Map();
   mapShipRival = new Map();
 
-  mapShipHit: Map<Ship, number> = new Map();
-
   cellWidth = 40;
   selfBoard = new Board();
   rivalBoard = new Board();
+  selfShipList: Ship[] = initShips();
+  rivalShipList: Ship[] = initShips();
 
   selectedShip!: Ship;
   selectedDiv!: number;
 
-  selfShipList: Ship[] = initShips();
-  rivalShipList: Ship[] = initShips();
+  onDropOnShip = false;
 
   rowList: number[] = Array.from({length: 10}, (_, index) => index);
   colList: number[] = Array.from({length: 10}, (_, index) => index);
@@ -42,18 +41,59 @@ export class BattleshipGameComponent implements AfterViewInit{
   initShips(): void {
     for (let i = 0; i < this.selfShipList.length; i++) {
 
-      this.rivalShipList[i].isVisible = false;
-      this.mapShipRival.set(this.rivalShipList[i], this.listShipRival.get(i)!.nativeElement);
-
       this.mapShipSelf.set(this.selfShipList[i].type, this.listShipSelf.get(i)!.nativeElement);
 
-      this.mapShipHit.set(this.rivalShipList[i], 0);
+      this.rivalShipList[i].isVisible = false;
+      this.mapShipRival.set(this.rivalShipList[i].type, this.listShipRival.get(i)!.nativeElement);
+
     }
   }
 
   onDragStart(shipView: Ship) {
     this.selectedShip = shipView;
   }
+
+  onDrop(event: DragEvent, row: number, col: number) {
+
+    if (!this.onDropOnShip) {
+      const initialCol = col - this.selectedDiv;
+      const initialRow = row - this.selectedDiv;
+
+      let head = this.selectedShip.isHorizontal ? this.selfBoard.cell[row][initialCol] : this.selfBoard.cell[initialRow][col];
+      let cellHTML = event.target as HTMLElement;
+      const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
+
+      this.setLeftRight(this.selfBoard, head, shipHTML, cellHTML, undefined);
+    }
+    this.onDropOnShip = false;
+  }
+
+
+  onMouseDown(selectedDiv: number) {
+    this.selectedDiv = selectedDiv;
+  }
+
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onClickCell(event: Event, row: number, col: number) {
+    const cell = this.rivalBoard.cell[row][col];
+    const ship = cell.ship!;
+    let cellHTML = event.target as HTMLElement;
+
+    if (cell.hasShip()) {
+      ship.hit = ++ship.hit;
+      cellHTML.classList.add('disableClick', 'boom');
+      if (ship.length === ship.hit) {
+        this.showShipWhenAllHit(ship);
+      }
+    } else {
+      cellHTML.classList.add('disableClick', 'miss')
+    }
+  }
+
 
   positionShipRandomly() {
     let ship = 0
@@ -70,8 +110,7 @@ export class BattleshipGameComponent implements AfterViewInit{
       if (Math.random() < 0.5) {
         this.selectedShip.isHorizontal = false;
         let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
-        shipHTML.style.width = dimension.getLeftString();
-        shipHTML.style.height = dimension.getTopString();
+        this.setWidthAndHeight(dimension, shipHTML);
       }
       if (this.setLeftRight(this.rivalBoard, head, shipHTML, cellHTML, this.notShipAround)) {
         ship++;
@@ -105,22 +144,6 @@ export class BattleshipGameComponent implements AfterViewInit{
     return true;
   }
 
-  onClickCell(event: Event, row: number, col: number) {
-    const cell = this.rivalBoard.cell[row][col];
-    const ship = cell.ship!;
-    let cellHTML = event.target as HTMLElement;
-
-    if (cell.hasShip()) {
-      cellHTML.classList.add('disableClick', 'boom');
-      this.mapShipHit.set(ship, this.mapShipHit.get(ship)! + 1);
-      if (ship.length === this.mapShipHit.get(ship)) {
-        this.showShipWhenAllHit(ship);
-      }
-    } else {
-      cellHTML.classList.add('disableClick', 'miss')
-    }
-  }
-
   showShipWhenAllHit(ship: Ship) {
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
@@ -132,31 +155,14 @@ export class BattleshipGameComponent implements AfterViewInit{
     ship.isVisible = true;
   }
 
-  onDrop(event: DragEvent, row: number, col: number) {
 
-      const initialCol = col - this.selectedDiv;
-      const initialRow = row - this.selectedDiv;
-
-      let head = this.selectedShip.isHorizontal ? this.selfBoard.cell[row][initialCol] : this.selfBoard.cell[initialRow][col];
-      let cellHTML = event.target as HTMLElement;
-      const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
-
-      this.setLeftRight(this.selfBoard, head, shipHTML, cellHTML, undefined);
-    }
-
-
-  setLeftRight(board: Board, head: Cell, shipHTML: HTMLElement, cellHTML: HTMLElement, callback: Function | undefined) {
+  setLeftRight(board: Board, head: Cell, shipHTML: HTMLElement, cellHTML: HTMLElement, notShipAround: Function | undefined) {
 
     let coordinate = this.shipIsInsideTable(head, cellHTML);
-    if (coordinate && (!callback || callback(this, head))) {
-
-      if (!callback) {
-        this.selectedShip.oldHead = this.selectedShip.head;
-      }
+    if (coordinate && this.assertThereIsNoOverlap(board, head, true) && (!notShipAround || notShipAround(this, head))) {
 
       this.selectedShip.oldHead = this.selectedShip.head;
-      shipHTML.style.left = coordinate.getLeftString();
-      shipHTML.style.top = coordinate.getTopString();
+      this.setTopAndLeft(coordinate, shipHTML);
 
       this.selectedShip.head = new Cell(head.row, head.col);
       cellHTML.appendChild(shipHTML);
@@ -165,6 +171,27 @@ export class BattleshipGameComponent implements AfterViewInit{
       return true;
     }
     return false;
+  }
+
+
+  assertThereIsNoOverlap(board: Board, head: Cell, isDrop: boolean) {
+    let isHorizontal = this.selectedShip.isHorizontal;
+    if (!this.selectedDiv) {
+      this.selectedDiv = 0;
+    }
+
+    let hasShip;
+    for (let i = 0; i < this.selectedShip.length; i++) {
+      if (isDrop) {
+        hasShip = board.cell[head.row + (isHorizontal ? 0 : i)][head.col + (isHorizontal ? i : 0)]?.ship;
+      } else {
+        hasShip = board.cell[head.row + (isHorizontal ? i : 0)][head.col + (isHorizontal ? 0 : i)]?.ship;
+      }
+      if (hasShip && hasShip !== this.selectedShip) {
+        return false;
+      }
+    }
+    return true;
   }
 
 
@@ -219,6 +246,7 @@ export class BattleshipGameComponent implements AfterViewInit{
     return row >= 0 && row <= 9 && col >= 0 && col <= 9;
   }
 
+
   emptyOrFillCellsWithShips(board: Board, oldHead: Cell | undefined, head: Cell | undefined) {
     if (oldHead) {
       this.emptyOrFillCellsWithShipsAux(board, oldHead, false);
@@ -237,16 +265,15 @@ export class BattleshipGameComponent implements AfterViewInit{
     }
   }
 
-
-  onMouseDown(selectedDiv: number) {
-    this.selectedDiv = selectedDiv;
+  setWidthAndHeight(coordinate : Coordinate, shipHTML : HTMLElement) {
+    shipHTML.style.width = coordinate.getLeftString();
+    shipHTML.style.height = coordinate.getTopString();
   }
 
-
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
+  setTopAndLeft(coordinate : Coordinate, shipHTML : HTMLElement) {
+    shipHTML.style.left = coordinate.getLeftString();
+    shipHTML.style.top = coordinate.getTopString();
   }
-
 }
 
 
