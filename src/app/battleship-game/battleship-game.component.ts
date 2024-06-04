@@ -19,8 +19,8 @@ export class BattleshipGameComponent implements AfterViewInit{
   mapShipRival = new Map();
 
   cellWidth = 40;
-  selfBoard = new Board();
-  rivalBoard = new Board();
+  selfBoard: Board = new Board();
+  rivalBoard : Board = new Board();
   selfShipList: Ship[] = initShips();
   rivalShipList: Ship[] = initShips();
 
@@ -86,13 +86,14 @@ export class BattleshipGameComponent implements AfterViewInit{
 
     if (cell.hasShip()) {
       ship.hit = ++ship.hit;
-      cellHTML.classList.add('disableClick', 'boom');
+      cell.hit = 'boom';
       if (ship.length === ship.hit) {
         this.showShipWhenAllHit(ship);
       }
     } else {
-      cellHTML.classList.add('disableClick', 'miss')
+      cell.hit = 'miss';
     }
+    cellHTML.classList.add('disableClick');
   }
 
 
@@ -182,9 +183,10 @@ export class BattleshipGameComponent implements AfterViewInit{
   showShipWhenAllHit(ship: Ship) {
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
-        this.listRivalCell.get(ship.head!.row * 10 + ship.head!.col + i)?.nativeElement.classList.remove('boom');
-      } else {
-        this.listRivalCell.get(ship.head!.row * 10 + ship.head!.col + 10 * i)?.nativeElement.classList.remove('boom');
+        this.rivalBoard.cell[ship.head!.row][ship.head!.col + i].hit = undefined;
+      }
+      else {
+        this.rivalBoard.cell[ship.head!.row + i][ship.head!.col].hit = undefined;
       }
     }
     ship.isVisible = true;

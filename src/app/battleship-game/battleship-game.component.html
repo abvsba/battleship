@@ -51,7 +51,10 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'prueba': rivalBoard.cell[row][col].hasShip()}">
+              [ngClass]="{'prueba': selfBoard.cell[row][col].hasShip(),
+             'miss': rivalBoard.cell[row][col].isMiss(),
+             'boom': rivalBoard.cell[row][col].isBoom()
+             }">
           </td>
         </tr>
       </table>
