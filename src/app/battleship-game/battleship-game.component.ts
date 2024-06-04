@@ -54,13 +54,14 @@ export class BattleshipGameComponent implements AfterViewInit{
     this.selectedShip = shipView;
   }
 
+
   onDrop(event: DragEvent, row: number, col: number) {
 
     if (!this.onDropOnShip) {
       const initialCol = col - this.selectedDiv;
       const initialRow = row - this.selectedDiv;
 
-      let head = this.selectedShip.isHorizontal ? this.selfBoard.cell[row][initialCol] : this.selfBoard.cell[initialRow][col];
+      let head = this.selectedShip.isHorizontal ? this.selfBoard.getCell(row, initialCol) : this.selfBoard.getCell(initialRow, col);
       let cellHTML = event.target as HTMLElement;
       const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
 
@@ -80,7 +81,7 @@ export class BattleshipGameComponent implements AfterViewInit{
   }
 
   onClickCell(event: Event, row: number, col: number) {
-    const cell = this.rivalBoard.cell[row][col];
+    const cell = this.rivalBoard.getCell(row, col);
     const ship = cell.ship!;
     let cellHTML = event.target as HTMLElement;
 
@@ -94,6 +95,24 @@ export class BattleshipGameComponent implements AfterViewInit{
       cell.hit = 'miss';
     }
     cellHTML.classList.add('disableClick');
+  }
+
+  onClickShip(ship: Ship) {
+    this.selectedShip = ship;
+    let blockHeight = (this.cellWidth * ship.length);
+    let dimensionV = new Coordinate(this.cellWidth, blockHeight);
+    let dimensionH = new Coordinate(blockHeight, this.cellWidth);
+    let isHorizontal = ship.isHorizontal;
+    let dimension = isHorizontal ? dimensionV : dimensionH;
+
+    const shipHTML = this.mapShipSelf.get(ship.type);
+    if (this.assertShipIsInsideTable(ship.head!, true) &&
+      this.assertThereIsNoOverlap(this.selfBoard, ship.head!, false)) {
+
+      this.setWidthAndHeight(dimension, shipHTML);
+      ship.isHorizontal = !isHorizontal;
+      this.emptyAndFillCellsWithShipsWhenChangeDirection(ship, isHorizontal);
+    }
   }
 
 
@@ -164,9 +183,11 @@ export class BattleshipGameComponent implements AfterViewInit{
       !app.hasShipAtCell(row - 1, col) && !app.hasShipAtCell(row + length, col));
   }
 
+
   hasShipAtCell(row: number, col: number) {
-    return this.isValidCell(row, col) && this.rivalBoard.cell[row][col].hasShip();
+    return this.isValidCell(row, col) && this.rivalBoard.getCell(row, col).hasShip();
   }
+
 
   checkAdjacentCells(row: number, col: number) {
     let isHorizontal = this.selectedShip.isHorizontal;
@@ -180,13 +201,14 @@ export class BattleshipGameComponent implements AfterViewInit{
     return true;
   }
 
+
   showShipWhenAllHit(ship: Ship) {
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
-        this.rivalBoard.cell[ship.head!.row][ship.head!.col + i].hit = undefined;
+        this.rivalBoard.getCell(ship.head!.row, ship.head!.col + i).hit = undefined;
       }
       else {
-        this.rivalBoard.cell[ship.head!.row + i][ship.head!.col].hit = undefined;
+        this.rivalBoard.getCell(ship.head!.row + i, ship.head!.col).hit = undefined;
       }
     }
     ship.isVisible = true;
@@ -220,9 +242,9 @@ export class BattleshipGameComponent implements AfterViewInit{
     let hasShip;
     for (let i = 0; i < this.selectedShip.length; i++) {
       if (isDrop) {
-        hasShip = board.cell[head.row + (isHorizontal ? 0 : i)][head.col + (isHorizontal ? i : 0)]?.ship;
+        hasShip = board.getCell(head.row + (isHorizontal ? 0 : i), head.col + (isHorizontal ? i : 0))?.ship;
       } else {
-        hasShip = board.cell[head.row + (isHorizontal ? i : 0)][head.col + (isHorizontal ? 0 : i)]?.ship;
+        hasShip = board.getCell(head.row + (isHorizontal ? i : 0), head.col + (isHorizontal ? 0 : i))?.ship;
       }
       if (hasShip && hasShip !== this.selectedShip) {
         return false;
@@ -298,8 +320,19 @@ export class BattleshipGameComponent implements AfterViewInit{
     const isHorizontal = this.selectedShip.isHorizontal;
 
     for (let i = 0; i < this.selectedShip.length; i++) {
-      board.cell[head!.row + (isHorizontal ? 0 : i)][head!.col + (isHorizontal ? i : 0)].ship = fill ? this.selectedShip : undefined;
+      board.getCell(head!.row + (isHorizontal ? 0 : i), head!.col + (isHorizontal ? i : 0)).ship = fill ? this.selectedShip : undefined;
     }
+  }
+
+  emptyAndFillCellsWithShipsWhenChangeDirection(ship: Ship, isHorizontal: boolean) {
+    const initialRow = ship.head!.row;
+    const initialCol = ship.head!.col;
+
+    for (let i = 0; i < ship.length; i++) {
+      this.selfBoard.getCell(initialRow, initialCol + i).ship = isHorizontal ? undefined : ship;
+      this.selfBoard.getCell(initialRow + i, initialCol).ship = isHorizontal ? ship : undefined;
+    }
+    this.selfBoard.getCell(initialRow, initialCol).ship = ship;
   }
 
   setWidthAndHeight(coordinate : Coordinate, shipHTML : HTMLElement) {

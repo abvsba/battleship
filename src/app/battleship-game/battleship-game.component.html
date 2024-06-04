@@ -25,6 +25,7 @@
            [style.top.px]="i*50 + 450"
            [ngClass]="{'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
+           (click)="onClickShip(ship)"
            (dragstart)="onDragStart(ship)"
            (dragover)="onDragOver($event)"
            (drop)="onDropOnTopOfShip($event)">
@@ -51,7 +52,7 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'prueba': selfBoard.cell[row][col].hasShip(),
+              [ngClass]="{'prueba': rivalBoard.cell[row][col].hasShip(),
              'miss': rivalBoard.cell[row][col].isMiss(),
              'boom': rivalBoard.cell[row][col].isBoom()
              }">
