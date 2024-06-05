@@ -1,24 +1,35 @@
 import {Cell} from "./cell.model";
 
 export class Board {
-  cell : Cell[][];
+  numberRow = 10;
+  numberCol = 10;
+
+  board : Cell[][];
+
   constructor() {
-    this.cell = this.initBoard();
+    this.board = this.initBoard();
   }
 
   initBoard() : Cell[][] {
-    const numberRow = 10;
-    const numberCol = 10;
-    const board: Cell[][] = [];
+    this.board = [];
 
-    for (let i = 0; i < numberRow; i++) {
-      board.push([]);
-      for (let j = 0; j < numberCol; j++) {
-        board[i].push(new Cell(i, j))
+    for (let i = 0; i < this.numberRow; i++) {
+      this.board.push([]);
+      for (let j = 0; j < this.numberCol; j++) {
+        this.board[i].push(new Cell(i, j))
       }
     }
-    return board;
+    return this.board;
   }
+
+  getCell(row : number, col: number) {
+    return this.board[row][col];
+  }
+
+  setCell(cell : Cell) {
+    this.board[cell.row][cell.col] = cell;
+  }
+
 }
 
 

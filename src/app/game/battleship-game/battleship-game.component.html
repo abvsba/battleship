@@ -1,4 +1,12 @@
+
 <div class="table-container">
+
+  <div class="self-table">
+    <div>
+      <app-ship-stat (mapShipStatEvent)="mapShipStatSelf = $event" [ships]="selfShipList"></app-ship-stat>
+    </div>
+  </div>
+
   <div class="table-container-self">
     <table>
       <tr *ngFor="let row of rowList">
@@ -9,7 +17,7 @@
             (dragover)="onDragOver($event)"
             [attr.data-x]="row"
             [attr.data-y]="col"
-            [ngClass]="{'prueba': selfBoard.cell[row][col].hasShip()}">
+            [ngClass]="{'prueba': selfBoard.getCell(row, col).hasShip()}">
         </td>
       </tr>
     </table>
@@ -25,6 +33,7 @@
            [style.top.px]="i*50 + 450"
            [ngClass]="{'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
+           (click)="onClickShip(ship)"
            (dragstart)="onDragStart(ship)"
            (dragover)="onDragOver($event)"
            (drop)="onDropOnTopOfShip($event)">
@@ -51,7 +60,10 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'prueba': rivalBoard.cell[row][col].hasShip()}">
+              [ngClass]="{'prueba': rivalBoard.getCell(row, col).hasShip(),
+             'miss': rivalBoard.getCell(row, col).isMiss(),
+             'boom': rivalBoard.getCell(row, col).isBoom()
+             }">
           </td>
         </tr>
       </table>
@@ -66,5 +78,9 @@
          [style.top.px]="i*50 + 450"
          [ngClass]="{'hide-ship': !ship.isVisible, 'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
     </div>
+  </div>
+
+  <div>
+    <app-ship-stat (mapShipStatEvent)="mapShipStatRival = $event" [ships]="rivalShipList" [isRival]="true"></app-ship-stat>
   </div>
 </div>

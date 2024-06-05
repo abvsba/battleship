@@ -1,0 +1,9 @@
+
+<div *ngFor="let ship of ships; let i = index"
+     class="ship-stat"
+     #ship_stat
+     [style.top.px]="i * 20"
+     [style.width.px]="ship.length * 15"
+     [style.right.px]="isRival ? 0 : null"
+     [id]="ship.type">
+</div>
