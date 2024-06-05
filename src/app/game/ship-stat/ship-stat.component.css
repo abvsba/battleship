@@ -1,0 +1,7 @@
+.ship-stat {
+  height: 12px;
+  position: absolute;
+  background-color: rgba(100, 149, 237, 0.35);
+  border: 1px solid blue;
+  z-index: 2;
+}

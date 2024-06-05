@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, ElementRef, QueryList, ViewChildren} from '@angular/core';
-import {Ship} from "../../shared/models/ship.model";
-import {Board} from "../../shared/models/board.model";
-import {Cell} from "../../shared/models/cell.model";
-import {Coordinate} from "../../shared/models/coordinate.model";
+import {Ship} from "../../../shared/models/ship.model";
+import {Board} from "../../../shared/models/board.model";
+import {Cell} from "../../../shared/models/cell.model";
+import {Coordinate} from "../../../shared/models/coordinate.model";
 
 @Component({
   selector: 'app-battleship-game',
@@ -14,6 +14,9 @@ export class BattleshipGameComponent implements AfterViewInit{
   @ViewChildren('ship_rival') listShipRival!: QueryList<ElementRef>;
   @ViewChildren('self_cell') listSelfCell!: QueryList<ElementRef>;
   @ViewChildren('rival_cell') listRivalCell!: QueryList<ElementRef>;
+
+  mapShipStatRival: Map<string, HTMLElement> = new Map();
+  mapShipStatSelf: Map<string, HTMLElement> = new Map();
 
   mapShipSelf = new Map();
   mapShipRival = new Map();
@@ -210,6 +213,7 @@ export class BattleshipGameComponent implements AfterViewInit{
 
 
   showShipWhenAllHit(ship: Ship) {
+    this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'red';
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
         this.rivalBoard.getCell(ship.head!.row, ship.head!.col + i).hit = undefined;

@@ -1,5 +1,12 @@
 
 <div class="table-container">
+
+  <div class="self-table">
+    <div>
+      <app-ship-stat (mapShipStatEvent)="mapShipStatSelf = $event" [ships]="selfShipList"></app-ship-stat>
+    </div>
+  </div>
+
   <div class="table-container-self">
     <table>
       <tr *ngFor="let row of rowList">
@@ -71,5 +78,9 @@
          [style.top.px]="i*50 + 450"
          [ngClass]="{'hide-ship': !ship.isVisible, 'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
     </div>
+  </div>
+
+  <div>
+    <app-ship-stat (mapShipStatEvent)="mapShipStatRival = $event" [ships]="rivalShipList" [isRival]="true"></app-ship-stat>
   </div>
 </div>
