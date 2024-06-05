@@ -1,3 +1,4 @@
+
 <div class="table-container">
   <div class="table-container-self">
     <table>
@@ -9,7 +10,7 @@
             (dragover)="onDragOver($event)"
             [attr.data-x]="row"
             [attr.data-y]="col"
-            [ngClass]="{'prueba': selfBoard.cell[row][col].hasShip()}">
+            [ngClass]="{'prueba': selfBoard.getCell(row, col).hasShip()}">
         </td>
       </tr>
     </table>
@@ -52,9 +53,9 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'prueba': rivalBoard.cell[row][col].hasShip(),
-             'miss': rivalBoard.cell[row][col].isMiss(),
-             'boom': rivalBoard.cell[row][col].isBoom()
+              [ngClass]="{'prueba': rivalBoard.getCell(row, col).hasShip(),
+             'miss': rivalBoard.getCell(row, col).isMiss(),
+             'boom': rivalBoard.getCell(row, col).isBoom()
              }">
           </td>
         </tr>

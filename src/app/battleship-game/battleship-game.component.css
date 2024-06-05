@@ -9,6 +9,13 @@ table {
   position: relative;
 }
 
+button{
+  position: absolute;
+  top: 150px;
+  left: 124px;
+  z-index: 7;
+}
+
 .table-container {
   display: flex;
   position: absolute;
@@ -31,7 +38,6 @@ table {
   background-color: lightblue;
 }
 
-
 .ship {
   border-radius: 20px;
   height: 40px;
@@ -44,24 +50,34 @@ table {
   z-index: 2;
 }
 
-.ship-block {
-  width: 40px;
-  height: 40px;
-  z-index: 2;
-}
-
-.last-ship-block {
-  width: 38px;
-  height: 38px;
-  z-index: 2;
-}
-
-.cursor {
-  cursor : move;
+.overlay {
+  pointer-events: none;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  background-color: transparent;
 }
 
 .hide-ship {
   visibility: hidden;
+}
+
+.ship-stat {
+  height: 12px;
+  position: absolute;
+  background-color: rgba(100, 149, 237, 0.35);
+  border: 1px solid blue;
+  z-index: 2;
+}
+
+.borderChange {
+  animation-name: colorChange;
+  animation-duration: 1s;
+}
+
+@keyframes colorChange {
+  50%  {border-color: red; background-color: indianred}
 }
 
 .miss,
@@ -99,6 +115,69 @@ table {
   }
 }
 
+.ship-block {
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+}
+
+.last-ship-block {
+  width: 38px;
+  height: 38px;
+  z-index: 2;
+}
+
+.cursor {
+  cursor : move;
+}
+
 .disableClick {
   pointer-events: none;
 }
+
+.vertical::after,
+.horizontal::after {
+  content: '';
+  position: absolute;
+  border: .3vmin solid white;
+  border-radius: 20px;
+  top: -3px;
+  bottom: -3px;
+  left: -3px;
+  right: -3px;
+}
+
+.horizontal::after {
+  animation: ripplesY 3s linear infinite;
+  border-left: none;
+  border-right: none;
+}
+
+.vertical::after {
+  animation: ripplesX 3s linear infinite;
+  border-top: none;
+  border-bottom: none;
+}
+
+@keyframes ripplesX {
+  0% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.5);
+  }
+}
+
+@keyframes ripplesY {
+  0% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.5);
+  }
+}
+

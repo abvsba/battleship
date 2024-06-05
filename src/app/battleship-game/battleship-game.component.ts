@@ -65,7 +65,9 @@ export class BattleshipGameComponent implements AfterViewInit{
       let cellHTML = event.target as HTMLElement;
       const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
 
-      this.setLeftRight(this.selfBoard, head, shipHTML, cellHTML, undefined);
+      if (!this.setLeftRight(this.selfBoard, head, shipHTML, cellHTML, undefined)) {
+        this.changeShipColorWhenFailPositioning(shipHTML);
+      }
     }
     this.onDropOnShip = false;
   }
@@ -113,6 +115,9 @@ export class BattleshipGameComponent implements AfterViewInit{
       ship.isHorizontal = !isHorizontal;
       this.emptyAndFillCellsWithShipsWhenChangeDirection(ship, isHorizontal);
     }
+    else {
+      this.changeShipColorWhenFailPositioning(shipHTML);
+    }
   }
 
 
@@ -145,9 +150,11 @@ export class BattleshipGameComponent implements AfterViewInit{
         const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
         cellHTML.appendChild(shipHTML);
       }
+      else {
+        this.changeShipColorWhenFailPositioning(shipHTML);
+      }
     }
   }
-
 
 
   positionShipRandomly() {
@@ -267,19 +274,6 @@ export class BattleshipGameComponent implements AfterViewInit{
   }
 
 
-  getCoordinate(cellHTML : HTMLElement, divWidth : number) {
-    let divLeft, divTop;
-    if (this.selectedShip.isHorizontal) {
-      divLeft = cellHTML.offsetLeft - divWidth;
-      divTop = cellHTML.offsetTop;
-    } else {
-      divLeft = cellHTML.offsetLeft;
-      divTop = cellHTML.offsetTop - divWidth;
-    }
-    return new Coordinate(divLeft, divTop);
-  }
-
-
   assertShipIsInsideTable(head: Cell, isClick: boolean) {
     let tailCol = head.col;
     let tailRow = head.row;
@@ -306,6 +300,20 @@ export class BattleshipGameComponent implements AfterViewInit{
   }
 
 
+  getCoordinate(cellHTML : HTMLElement, divWidth : number) {
+    let divLeft, divTop;
+    if (this.selectedShip.isHorizontal) {
+      divLeft = cellHTML.offsetLeft - divWidth;
+      divTop = cellHTML.offsetTop;
+    } else {
+      divLeft = cellHTML.offsetLeft;
+      divTop = cellHTML.offsetTop - divWidth;
+    }
+    return new Coordinate(divLeft, divTop);
+  }
+
+
+
   emptyOrFillCellsWithShips(board: Board, oldHead: Cell | undefined, head: Cell | undefined) {
     if (oldHead) {
       this.emptyOrFillCellsWithShipsAux(board, oldHead, false);
@@ -324,6 +332,7 @@ export class BattleshipGameComponent implements AfterViewInit{
     }
   }
 
+
   emptyAndFillCellsWithShipsWhenChangeDirection(ship: Ship, isHorizontal: boolean) {
     const initialRow = ship.head!.row;
     const initialCol = ship.head!.col;
@@ -334,6 +343,15 @@ export class BattleshipGameComponent implements AfterViewInit{
     }
     this.selfBoard.getCell(initialRow, initialCol).ship = ship;
   }
+
+
+  changeShipColorWhenFailPositioning(shipHTML: HTMLElement) {
+    shipHTML.classList.add('borderChange')
+    setTimeout(() => {
+      shipHTML.classList.remove('borderChange')
+    }, 1000);
+  }
+
 
   setWidthAndHeight(coordinate : Coordinate, shipHTML : HTMLElement) {
     shipHTML.style.width = coordinate.getLeftString();
