@@ -17,7 +17,9 @@
             (dragover)="onDragOver($event)"
             [attr.data-x]="row"
             [attr.data-y]="col"
-            [ngClass]="{'prueba': selfBoard.getCell(row, col).hasShip()}">
+            [ngClass]="{'miss': selfBoard.getCell(row, col).isMiss(),
+             'boom': selfBoard.getCell(row, col).isBoom()
+             }">
         </td>
       </tr>
     </table>
@@ -47,11 +49,16 @@
     </div>
   </div>
 
+  <div id="finalMessage"></div>
+
   <!--  =================================================== RIVAL ================================================-->
 
   <div class="rival-table">
 
-    <div [ngClass]="{'overlay': false}">
+    <button *ngIf ="selectedShip && checkAllShipsArePositioned() && disableTableInteraction"
+            (click) = "startGame()" mat-flat-button color="warn">Start game</button>
+
+    <div [ngClass]="{'overlay': disableTableInteraction}">
       <table>
         <tr *ngFor="let row of rowList">
           <td onKeyDown *ngFor="let col of colList"
@@ -60,8 +67,7 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'prueba': rivalBoard.getCell(row, col).hasShip(),
-             'miss': rivalBoard.getCell(row, col).isMiss(),
+              [ngClass]="{'miss': rivalBoard.getCell(row, col).isMiss(),
              'boom': rivalBoard.getCell(row, col).isBoom()
              }">
           </td>
