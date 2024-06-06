@@ -17,6 +17,14 @@ export class Cell {
     return !!this.ship;
   }
 
+  getRow() {
+    return this.row;
+  }
+
+  getCol() {
+    return this.col;
+  }
+
   isBoom() {
     return this.hit === 'boom';
   }

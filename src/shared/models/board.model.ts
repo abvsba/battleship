@@ -30,6 +30,19 @@ export class Board {
     this.board[cell.row][cell.col] = cell;
   }
 
+  checkProbability(row: number, col: number) {
+    if (row < 0 || col < 0 ||
+      col >= this.numberCol ||	row >= this.numberRow) {
+      return 1;
+    }
+
+    let cell = this.getCell(row, col);
+    if(cell.isMiss() || cell.isBoom()) {
+      return 1;
+    } else
+      return 0;
+  }
+
 }
 
 

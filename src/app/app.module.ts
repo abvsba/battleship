@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {BattleshipGameComponent} from "./game/battleship-game/battleship-game.component";
 import {ShipStatComponent} from "./game/ship-stat/ship-stat.component";
+import {MatButtonModule} from "@angular/material/button";
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import {ShipStatComponent} from "./game/ship-stat/ship-stat.component";
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
