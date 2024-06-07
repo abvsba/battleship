@@ -4,6 +4,8 @@ import {Board} from "../../../shared/models/board.model";
 import {Cell} from "../../../shared/models/cell.model";
 import {Coordinate} from "../../../shared/models/coordinate.model";
 import {GameBot} from "../../../shared/models/game-bot.model";
+import {MatDialog} from "@angular/material/dialog";
+import {FinishGameDialogComponent} from "./finish-game-dialog/finish-game-dialog.component";
 
 @Component({
   selector: 'app-battleship-game',
@@ -46,6 +48,9 @@ export class BattleshipGameComponent implements AfterViewInit{
   colList: number[] = Array.from({length: 10}, (_, index) => index);
 
   protected readonly Array = Array;
+
+  constructor(private dialog: MatDialog) {
+  }
 
   ngAfterViewInit(): void {
     this.initShips();
@@ -134,11 +139,7 @@ export class BattleshipGameComponent implements AfterViewInit{
 
   showFinalMessage(message: string) {
     this.gameFinish = true;
-    let winner = document.createElement('div');
-    winner.setAttribute('class', 'winner');
-    let text = document.createTextNode(message);
-    winner.appendChild(text);
-    document.getElementById('finalMessage')!.appendChild(winner);
+    this.dialog.open(FinishGameDialogComponent, {data:  message});
   }
 
   botTurn() {
@@ -350,7 +351,7 @@ export class BattleshipGameComponent implements AfterViewInit{
 
 
   positionShipRandomly() {
-    let ship = 0
+    let ship = 0;
     while (ship < this.rivalShipList.length) {
       const randomNumber = Math.floor(Math.random() * 100);
       let cellHTML = this.listRivalCell.get(randomNumber)?.nativeElement;

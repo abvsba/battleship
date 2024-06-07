@@ -9,7 +9,7 @@ table {
   position: relative;
 }
 
-button{
+.startGame {
   position: absolute;
   top: 150px;
   left: 124px;
@@ -179,9 +179,4 @@ button{
     opacity: 0;
     transform: scaleY(1.5);
   }
-}
-
-.winner {
-  text-align: center;
-  font-size: 18pt;
 }

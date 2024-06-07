@@ -1,0 +1,16 @@
+.mat-toolbar {
+  justify-content: space-between;
+}
+
+.center {
+  justify-content: center;
+}
+
+.mat-grid-tile {
+  font-size: xx-large;
+}
+
+.noLinkStyle{
+  color: #000;
+  text-decoration: none;
+}
