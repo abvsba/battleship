@@ -49,13 +49,11 @@
     </div>
   </div>
 
-  <div id="finalMessage"></div>
-
   <!--  =================================================== RIVAL ================================================-->
 
   <div class="rival-table">
 
-    <button *ngIf ="selectedShip && checkAllShipsArePositioned() && disableTableInteraction"
+    <button class="startGame" *ngIf ="selectedShip && checkAllShipsArePositioned() && disableTableInteraction"
             (click) = "startGame()" mat-flat-button color="warn">Start game</button>
 
     <div [ngClass]="{'overlay': disableTableInteraction}">

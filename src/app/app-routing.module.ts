@@ -4,7 +4,6 @@ import {BattleshipGameComponent} from "./game/battleship-game/battleship-game.co
 
 const routes: Routes = [
   { path: 'game', component: BattleshipGameComponent },
-  { path: '**', redirectTo : 'game' }
 ];
 
 
