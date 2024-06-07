@@ -18,8 +18,8 @@
             [attr.data-x]="row"
             [attr.data-y]="col"
             [ngClass]="{'miss': selfBoard.getCell(row, col).isMiss(),
-             'boom': selfBoard.getCell(row, col).isBoom()
              }">
+          <div class="boom" *ngIf="selfBoard.getCell(row, col).isBoom()"></div>
         </td>
       </tr>
     </table>
@@ -65,9 +65,9 @@
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col"
-              [ngClass]="{'miss': rivalBoard.getCell(row, col).isMiss(),
-             'boom': rivalBoard.getCell(row, col).isBoom()
+              [ngClass]="{'miss': rivalBoard.getCell(row, col).isMiss()
              }">
+            <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
           </td>
         </tr>
       </table>
