@@ -1,7 +1,14 @@
 <mat-toolbar>
-  <span>{{title}}</span>
+
+
+  <span>Battleship</span>
 
   <div>
+    <button (click)="login()"  mat-button>
+      <mat-icon>person_outline</mat-icon>
+      <span>Login</span>
+    </button>
+
     <button mat-button routerLink="/game">
       <mat-icon>sports_esports</mat-icon>
       <span>play</span>
@@ -9,4 +16,8 @@
 
   </div>
 </mat-toolbar>
+
+
 <router-outlet></router-outlet>
+
+
