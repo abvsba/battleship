@@ -10,6 +10,12 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
 import { FinishGameDialogComponent } from './game/battleship-game/finish-game-dialog/finish-game-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
+import { LoginRegisterDialogComponent } from './login-register-dialog/login-register-dialog.component';
+import {MatInputModule} from "@angular/material/input";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -17,15 +23,22 @@ import {MatDialogModule} from "@angular/material/dialog";
     AppComponent,
     BattleshipGameComponent,
     ShipStatComponent,
-    FinishGameDialogComponent
+    FinishGameDialogComponent,
+    LoginRegisterDialogComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
-    MatDialogModule
+    MatDialogModule,
+    MatInputModule,
+    MatButtonToggleModule,
+    ReactiveFormsModule,
+    FormsModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
