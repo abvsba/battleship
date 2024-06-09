@@ -9,6 +9,11 @@
       <span>Login</span>
     </button>
 
+    <button (click)="logout()" *ngIf="isAuthenticated()" mat-button>
+      <mat-icon>person_outline</mat-icon>
+      <span>Logout</span>
+    </button>
+
     <button mat-button routerLink="/game">
       <mat-icon>sports_esports</mat-icon>
       <span>play</span>
