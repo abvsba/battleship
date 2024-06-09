@@ -268,6 +268,25 @@ export class BattleshipGameComponent implements AfterViewInit{
     this.turn = 0;
   }
 
+  // changeDirectionWhenHitMiss(fireDirection : number, validShot: number) {
+  //   if (validShot == 0 || validShot == 2) {
+  //     this.fireDirection = fireDirection;
+  //   }
+  // }
+  //
+  // prueba(lastShotCell : Cell, direction : number) {
+  //   const directionRowValues = [-1, 0, 1, 0];
+  //   const directionColValues = [0, -1, 0, 1];
+  //
+  //   let directionRow = directionRowValues[direction];
+  //   let directionCol = directionColValues[direction];
+  //
+  //   if (this.isValidCell(lastShotCell.getRow() + directionRow, lastShotCell.getCol() + directionCol)) {
+  //     let cell = this.bot.cellToFire(lastShotCell.getRow() + directionRow, lastShotCell.getCol() + directionCol);
+  //     return this.validShot(cell);
+  //   }
+  // }
+
   validShot(cell: Cell) {
     if (this.isValidCell(cell.getRow(), cell.getCol())) {
       let ship = cell.ship!;

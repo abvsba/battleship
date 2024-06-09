@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {UserRestService} from "../service/userRest.service";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-login-register-dialog',
@@ -14,7 +15,7 @@ export class LoginRegisterDialogComponent implements OnInit{
   registerForm!: FormGroup;
   loginForm!: FormGroup;
 
-  constructor(private auth: UserRestService) {
+  constructor(private auth: UserRestService, private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -32,8 +33,19 @@ export class LoginRegisterDialogComponent implements OnInit{
     });
   }
 
-  login() {
+  login(): void {
+    const username = this.loginForm.value.username!;
+    const password = this.loginForm.value.password!;
 
+    this.auth.login(username, password).subscribe({
+        next: () => {
+          this.dialog.closeAll();
+        },
+        error: () => {
+          this.loginForm.reset();
+        }
+      }
+    );
   }
 
   register() {
