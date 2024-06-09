@@ -67,5 +67,4 @@ export class LoginRegisterDialogComponent implements OnInit{
       return this.registerForm?.get("password")?.value === control.value ? null : {passwordNoMatch: true};
     }
   }
-
 }
