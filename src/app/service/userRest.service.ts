@@ -31,4 +31,7 @@ export class UserRestService {
     return this.http.post<User>(this.BASE_URL + '/signup', user);
   }
 
+  getToken(): string | undefined{
+    return this.user?.token;
+  }
 }
