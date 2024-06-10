@@ -28,6 +28,11 @@ export class UserRestService {
     );
   }
 
+  patchPassword(username : string, oldPassword: string, newPassword : string) {
+    return this.http.patch(this.BASE_URL + '/' + username + '/password',
+      { oldPassword : oldPassword, newPassword : newPassword });
+  }
+
   register(user : User): Observable<User> {
     return this.http.post<User>(this.BASE_URL + '/signup', user);
   }
@@ -39,6 +44,10 @@ export class UserRestService {
 
   getToken(): string | undefined{
     return this.user?.token;
+  }
+
+  getUser(): User {
+    return this.user!;
   }
 
   isAuthenticated(): boolean {

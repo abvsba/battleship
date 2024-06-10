@@ -1,0 +1,42 @@
+<div class="container mt-4 mb-4 p-3 d-flex">
+  <div class="card p-4">
+    <div class=" image d-flex flex-column justify-content-center align-items-center">
+      <h3> Profile</h3><br>
+      <button class="btn btn-secondary"><img src="https://i.imgur.com/wvxPV9S.png" height="100" width="100" alt=""/></button>
+      <span class="name mt-3">{{ user.username }}</span> <span class="idd">{{ user.email }}</span>
+
+      <div class=" d-flex mt-2">
+        <button (click)="triggerChangePassword = true" class="btn1 color2">Change password</button>
+      </div>
+      <br>
+      <div class=" d-flex mt-2">
+        <button (click)="logout()" class="btn1 color1 btn-dark">Log out</button>
+      </div>
+
+      <div class="mt-3">
+        <span>Thanks for using our website</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card2 p-4" *ngIf="triggerChangePassword">
+    <div class=" image d-flex flex-column justify-content-center align-items-center">
+      <h3 class = "title-color"> Change Password</h3><br>
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <mat-form-field>
+          <mat-label>Old password</mat-label>
+          <input matInput formControlName="oldPassword" type="text"/>
+          <mat-error *ngIf="passwordForm.get('oldPassword')!.hasError('required')">Password is required</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>New password</mat-label>
+          <input matInput formControlName="newPassword" type="text"/>
+          <mat-error *ngIf="passwordForm.get('newPassword')!.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="passwordForm.get('newPassword')!.hasError('minlength')">The password has to be at least 4 characters</mat-error>
+        </mat-form-field>
+        <button mat-flat-button color="warn" type="submit">Accept</button>
+      </form>
+    </div>
+  </div>
+</div>
+
