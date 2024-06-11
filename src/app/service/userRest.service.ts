@@ -37,6 +37,10 @@ export class UserRestService {
     return this.http.post<User>(this.BASE_URL + '/signup', user);
   }
 
+  getUserDDBB(username: string) {
+    return this.http.get(this.BASE_URL + '/' + username);
+  }
+
   logout() {
     this.user = undefined;
     this.router.navigate(['']).then();
