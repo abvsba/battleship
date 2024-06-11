@@ -1,0 +1,78 @@
+
+.container {
+  justify-content: center;
+  gap : 50px
+}
+
+.card {
+  width: 350px;
+  background-color: #efefef;
+  border: none;
+  transition: all 0.5s;
+  border-radius: 20px;
+}
+
+.card2 {
+  width: 350px;
+  background-color: #323232;
+  border: none;
+  transition: all 0.5s;
+  border-radius: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.image img {
+  transition: all 0.5s
+}
+
+.card:hover .image img {
+  transform: scale(1.3)
+}
+
+.btn {
+  height: 140px;
+  width: 140px;
+  border-radius: 50%
+}
+
+.name {
+  font-size: 22px;
+  font-weight: bold
+}
+
+.idd {
+  font-size: 18px;
+  font-weight: 600
+}
+
+.btn1 {
+  border-radius: 5px;
+  height: 40px;
+  width: 150px;
+  border: none;
+  color: white;
+  font-size: 15px
+}
+
+.color1 {
+  background-color: #000;
+}
+
+.color2 {
+  background-color: royalblue;
+}
+
+.title-color {
+  color : white;
+}
+
+.text span {
+  font-size: 13px;
+  color: white;
+  font-weight: 500
+}
+
+

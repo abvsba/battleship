@@ -18,6 +18,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {UserRestService} from "./service/userRest.service";
 import {InterceptorService, SecondInterceptor} from "./service/interceptor.service";
+import { ProfileComponent } from './profile/profile.component';
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 
 @NgModule({
@@ -26,7 +28,8 @@ import {InterceptorService, SecondInterceptor} from "./service/interceptor.servi
     BattleshipGameComponent,
     ShipStatComponent,
     FinishGameDialogComponent,
-    LoginRegisterDialogComponent
+    LoginRegisterDialogComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -40,6 +43,7 @@ import {InterceptorService, SecondInterceptor} from "./service/interceptor.servi
     MatButtonToggleModule,
     ReactiveFormsModule,
     FormsModule,
+    MatSnackBarModule,
     BrowserAnimationsModule
   ],
   providers: [

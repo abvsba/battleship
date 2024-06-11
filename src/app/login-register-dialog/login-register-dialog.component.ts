@@ -1,7 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from "@angular/forms";
 import {UserRestService} from "../service/userRest.service";
 import {MatDialog} from "@angular/material/dialog";
+import {catchError, map, Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-login-register-dialog',
@@ -20,7 +29,7 @@ export class LoginRegisterDialogComponent implements OnInit{
 
   ngOnInit() {
     this.registerForm = new FormGroup({
-      username: new FormControl('', Validators.required),
+      username: new FormControl('', Validators.required, this.checkUsername()),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(4)]),
       confirmPassword: new FormControl('', [Validators.required, this.checkPasswords()])
@@ -61,6 +70,20 @@ export class LoginRegisterDialogComponent implements OnInit{
       }
     });
   }
+
+  checkUsername(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<any> => {
+      return this.auth.getUserDDBB(control.value).pipe(
+        map(user => {
+          return user ? {usernameExist: true} : of(null);
+        }),
+        catchError(response => {
+          return of(null);
+        })
+      );
+    };
+  }
+
 
   checkPasswords(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
