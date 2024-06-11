@@ -129,7 +129,9 @@ export class BattleshipGameComponent implements AfterViewInit{
 
       this.turn = 1;
 
-      this.botTurn();
+      if (!this.gameFinish) {
+        this.botTurn();
+      }
     }
   }
 

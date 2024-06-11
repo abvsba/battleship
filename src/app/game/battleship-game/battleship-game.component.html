@@ -16,10 +16,9 @@
             (drop)="onDrop($event, row, col)"
             (dragover)="onDragOver($event)"
             [attr.data-x]="row"
-            [attr.data-y]="col"
-            [ngClass]="{'miss': selfBoard.getCell(row, col).isMiss(),
-             }">
+            [attr.data-y]="col">
           <div class="boom" *ngIf="selfBoard.getCell(row, col).isBoom()"></div>
+          <div class="miss" *ngIf="selfBoard.getCell(row, col).isMiss()"></div>
         </td>
       </tr>
     </table>
@@ -64,10 +63,9 @@
               class="board-td"
               (click)="onClickCell($event, row, col)"
               [attr.data-x]="row"
-              [attr.data-y]="col"
-              [ngClass]="{'miss': rivalBoard.getCell(row, col).isMiss()
-             }">
+              [attr.data-y]="col">
             <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
+            <div class="miss" *ngIf="rivalBoard.getCell(row, col).isMiss()"></div>
           </td>
         </tr>
       </table>
