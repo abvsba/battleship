@@ -5,7 +5,9 @@ import {Cell} from "../../../shared/models/cell.model";
 import {Coordinate} from "../../../shared/models/coordinate.model";
 import {GameBot} from "../../../shared/models/game-bot.model";
 import {MatDialog} from "@angular/material/dialog";
-import {FinishGameDialogComponent} from "./finish-game-dialog/finish-game-dialog.component";
+import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialog.component";
+import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
+import {EventService} from "../../service/eventService";
 
 @Component({
   selector: 'app-battleship-game',
@@ -49,12 +51,16 @@ export class BattleshipGameComponent implements AfterViewInit{
 
   protected readonly Array = Array;
 
-  constructor(private dialog: MatDialog) {
+  constructor(private event : EventService, private dialog: MatDialog) {
   }
 
   ngAfterViewInit(): void {
     this.initShips();
     this.positionShipRandomly();
+
+    this.event.saveGame$.subscribe(() => {
+      this.openSaveGame();
+    });
   }
 
   initShips(): void {
@@ -592,6 +598,22 @@ export class BattleshipGameComponent implements AfterViewInit{
     shipHTML.style.left = coordinate.getLeftString();
     shipHTML.style.top = coordinate.getTopString();
   }
+
+
+  openSaveGame() {
+    this.dialog.open(SaveGameDialogComponent,{
+      data: {
+        totalPlayerHits : this.totalPlayerHits,
+        fireDirection : this.fireDirection,
+        previousShots : this.previousShots,
+        selfShip: this.selfShipList,
+        rivalShip : this.rivalShipList,
+        selfBoard : this.selfBoard,
+        rivalBoard : this.rivalBoard,
+      },
+    });
+  }
+
 }
 
 

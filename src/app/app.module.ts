@@ -8,7 +8,7 @@ import {ShipStatComponent} from "./game/ship-stat/ship-stat.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
-import { FinishGameDialogComponent } from './game/battleship-game/finish-game-dialog/finish-game-dialog.component';
+import { FinishGameDialogComponent } from './game/finish-game-dialog/finish-game-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import { LoginRegisterDialogComponent } from './login-register-dialog/login-register-dialog.component';
 import {MatInputModule} from "@angular/material/input";
@@ -20,6 +20,8 @@ import {UserRestService} from "./service/userRest.service";
 import {InterceptorService, SecondInterceptor} from "./service/interceptor.service";
 import { ProfileComponent } from './profile/profile.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import { SaveGameDialogComponent } from './game/save-game-dialog/save-game-dialog.component';
+import {MatMenuModule} from "@angular/material/menu";
 
 
 @NgModule({
@@ -29,7 +31,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     ShipStatComponent,
     FinishGameDialogComponent,
     LoginRegisterDialogComponent,
-    ProfileComponent
+    ProfileComponent,
+    SaveGameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +47,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     ReactiveFormsModule,
     FormsModule,
     MatSnackBarModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatMenuModule
   ],
   providers: [
     UserRestService,
