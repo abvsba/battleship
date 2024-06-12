@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
   providedIn: 'root',
 })
 export class UserRestService {
-  private BASE_URL = 'http://localhost:3000/user';
+  private BASE_URL = 'http://localhost:3000/users';
   private user : User | undefined;
 
   constructor(private http: HttpClient, private router : Router) {}
@@ -28,8 +28,8 @@ export class UserRestService {
     );
   }
 
-  patchPassword(username : string, oldPassword: string, newPassword : string) {
-    return this.http.patch(this.BASE_URL + '/' + username + '/password',
+  patchPassword(userid : number, oldPassword: string, newPassword : string) {
+    return this.http.patch(this.BASE_URL + '/' + userid + '/password',
       { oldPassword : oldPassword, newPassword : newPassword });
   }
 

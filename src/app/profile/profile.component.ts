@@ -33,7 +33,7 @@ export class ProfileComponent {
     let oldPassword = this.passwordForm.value.oldPassword!;
     let newPassword = this.passwordForm.value.newPassword!;
 
-    this.auth.patchPassword(this.user.username, oldPassword, newPassword).subscribe({
+    this.auth.patchPassword(this.user.id, oldPassword, newPassword).subscribe({
       next: () => {
         this.snackBar.open('Password changed successfully', 'Close', {
           duration: 3000,
