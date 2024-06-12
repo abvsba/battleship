@@ -29,6 +29,11 @@ export class ProfileComponent {
   }
 
 
+  deleteUser() {
+    this.auth.deleteUser(this.user.id).subscribe()
+  }
+
+
   changePassword(): void {
     let oldPassword = this.passwordForm.value.oldPassword!;
     let newPassword = this.passwordForm.value.newPassword!;

@@ -22,6 +22,7 @@ export class UserRestService {
       tap((jsonToken: any) => {
         const jwtHelper = new JwtHelperService();
         this.user = jsonToken;
+        this.user!.id = jwtHelper.decodeToken(jsonToken.token).id;
         this.user!.username = jwtHelper.decodeToken(jsonToken.token).username;
         this.user!.email = jwtHelper.decodeToken(jsonToken.token).email;
       })
@@ -45,6 +46,12 @@ export class UserRestService {
     this.user = undefined;
     this.router.navigate(['']).then();
   }
+
+
+  deleteUser(userid : number) {
+    return this.http.delete(this.BASE_URL + '/' + userid);
+  }
+
 
   getToken(): string | undefined{
     return this.user?.token;
