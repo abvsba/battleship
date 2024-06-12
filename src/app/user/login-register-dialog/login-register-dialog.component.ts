@@ -8,7 +8,7 @@ import {
   ValidatorFn,
   Validators
 } from "@angular/forms";
-import {UserRestService} from "../service/userRest.service";
+import {UserRestService} from "../../service/userRest.service";
 import {MatDialog} from "@angular/material/dialog";
 import {catchError, map, Observable, of} from "rxjs";
 

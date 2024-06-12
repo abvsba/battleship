@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Observable} from "rxjs";
 import {Game} from "../../../shared/models/game.model";
 import {User} from "../../../shared/models/user.model";
@@ -11,7 +11,7 @@ import {UserRestService} from "../../service/userRest.service";
   templateUrl: './restart-game-dialog.component.html',
   styleUrls: ['./restart-game-dialog.component.css']
 })
-export class RestartGameDialogComponent {
+export class RestartGameDialogComponent implements OnInit{
 
   games$!: Observable<Game[]>;
   user! : User;
@@ -27,7 +27,6 @@ export class RestartGameDialogComponent {
     this.user = this.auth.getUser()
     this.games$ = this.fetchAllGamesByUserId(this.user.id);
   }
-
 
   fetchAllGamesByUserId(userId : number): Observable<Game[]> {
     return this.restService.fetchAllGamesByUserId(userId);

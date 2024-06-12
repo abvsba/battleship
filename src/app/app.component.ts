@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {LoginRegisterDialogComponent} from "./login-register-dialog/login-register-dialog.component";
+import {LoginRegisterDialogComponent} from "./user/login-register-dialog/login-register-dialog.component";
 import {UserRestService} from "./service/userRest.service";
 import {EventService} from "./service/eventService";
 import {Router} from "@angular/router";
