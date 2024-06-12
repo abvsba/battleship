@@ -1,0 +1,15 @@
+.example-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.radio-group-container {
+  max-height: 400px;
+  width: 300px;
+  overflow-y: auto;
+}
+
+.example-radio-button {
+  margin: 5px;
+}

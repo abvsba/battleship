@@ -34,6 +34,10 @@ export class AppComponent {
     this.events.triggerSaveGame();
   }
 
+  restartGame() {
+    this.events.triggerRestartGame();
+  }
+
   isAuthenticated(): boolean {
     return this.auth.isAuthenticated();
   }

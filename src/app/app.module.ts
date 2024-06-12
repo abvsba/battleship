@@ -22,6 +22,8 @@ import { ProfileComponent } from './profile/profile.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import { SaveGameDialogComponent } from './game/save-game-dialog/save-game-dialog.component';
 import {MatMenuModule} from "@angular/material/menu";
+import { RestartGameDialogComponent } from './game/restart-game-dialog/restart-game-dialog.component';
+import {MatRadioModule} from "@angular/material/radio";
 
 
 @NgModule({
@@ -32,7 +34,8 @@ import {MatMenuModule} from "@angular/material/menu";
     FinishGameDialogComponent,
     LoginRegisterDialogComponent,
     ProfileComponent,
-    SaveGameDialogComponent
+    SaveGameDialogComponent,
+    RestartGameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +51,8 @@ import {MatMenuModule} from "@angular/material/menu";
     FormsModule,
     MatSnackBarModule,
     BrowserAnimationsModule,
-    MatMenuModule
+    MatMenuModule,
+    MatRadioModule
   ],
   providers: [
     UserRestService,
