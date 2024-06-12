@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
   providedIn: 'root',
 })
 export class UserRestService {
-  private BASE_URL = 'http://localhost:3000/user';
+  private BASE_URL = 'http://localhost:3000/users';
   private user : User | undefined;
 
   constructor(private http: HttpClient, private router : Router) {}
@@ -22,14 +22,15 @@ export class UserRestService {
       tap((jsonToken: any) => {
         const jwtHelper = new JwtHelperService();
         this.user = jsonToken;
+        this.user!.id = jwtHelper.decodeToken(jsonToken.token).id;
         this.user!.username = jwtHelper.decodeToken(jsonToken.token).username;
         this.user!.email = jwtHelper.decodeToken(jsonToken.token).email;
       })
     );
   }
 
-  patchPassword(username : string, oldPassword: string, newPassword : string) {
-    return this.http.patch(this.BASE_URL + '/' + username + '/password',
+  patchPassword(userid : number, oldPassword: string, newPassword : string) {
+    return this.http.patch(this.BASE_URL + '/' + userid + '/password',
       { oldPassword : oldPassword, newPassword : newPassword });
   }
 
@@ -45,6 +46,12 @@ export class UserRestService {
     this.user = undefined;
     this.router.navigate(['']).then();
   }
+
+
+  deleteUser(userid : number) {
+    return this.http.delete(this.BASE_URL + '/' + userid);
+  }
+
 
   getToken(): string | undefined{
     return this.user?.token;

@@ -4,7 +4,7 @@
   <span>Battleship</span>
 
   <div>
-    <button (click)="login()"  mat-button>
+    <button (click)="login()" *ngIf="!isAuthenticated()" mat-button>
       <mat-icon>person_outline</mat-icon>
       <span>Login</span>
     </button>
