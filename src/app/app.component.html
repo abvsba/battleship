@@ -25,8 +25,17 @@
       <span>play</span>
     </button>
 
+    <button *ngIf="isGameRouteActive() && isAuthenticated()" [matMenuTriggerFor]="game_menu" mat-button>
+      <mat-icon>menu</mat-icon>
+      <span>Menu</span>
+    </button>
+
   </div>
 </mat-toolbar>
+
+<mat-menu #game_menu="matMenu">
+  <button mat-menu-item (click)="saveGame()"> <mat-icon>save</mat-icon> Save game</button>
+</mat-menu>
 
 
 <router-outlet></router-outlet>

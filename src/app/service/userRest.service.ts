@@ -14,7 +14,7 @@ export class UserRestService {
   static NOT_FOUND = 404;
   static CONNECTION_REFUSE = 401;
 
-  private BASE_URL = 'http://localhost:3000/user';
+  private BASE_URL = 'http://localhost:3000/users';
   private user : User | undefined;
 
   private errorNotification = '';
@@ -30,6 +30,7 @@ export class UserRestService {
         tap((jsonToken: any) => {
           const jwtHelper = new JwtHelperService();
           this.user = jsonToken;
+          this.user!.id = jwtHelper.decodeToken(jsonToken.token).id;
           this.user!.username = jwtHelper.decodeToken(jsonToken.token).username;
           this.user!.email = jwtHelper.decodeToken(jsonToken.token).email;
         }),
@@ -37,8 +38,8 @@ export class UserRestService {
     );
   }
 
-  patchPassword(username : string, oldPassword: string, newPassword : string) {
-    return this.http.patch(this.BASE_URL + '/' + username + '/password',
+  patchPassword(userid : number, oldPassword: string, newPassword : string) {
+    return this.http.patch(this.BASE_URL + '/' + userid + '/password',
       { oldPassword : oldPassword, newPassword : newPassword })
       .pipe(catchError(error => this.handleError(error)));
   }
@@ -56,6 +57,12 @@ export class UserRestService {
     this.user = undefined;
     this.router.navigate(['']).then();
   }
+
+
+  deleteUser(userid : number) {
+    return this.http.delete(this.BASE_URL + '/' + userid);
+  }
+
 
   getToken(): string | undefined{
     return this.user?.token;
