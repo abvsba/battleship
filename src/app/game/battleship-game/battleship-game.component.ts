@@ -8,6 +8,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialog.component";
 import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
 import {EventService} from "../../service/eventService";
+import {RestartGameDialogComponent} from "../restart-game-dialog/restart-game-dialog.component";
 
 @Component({
   selector: 'app-battleship-game',
@@ -57,6 +58,10 @@ export class BattleshipGameComponent implements AfterViewInit{
   ngAfterViewInit(): void {
     this.initShips();
     this.positionShipRandomly();
+
+    this.event.restartGame$.subscribe(() => {
+      this.openRestartGame();
+    });
 
     this.event.saveGame$.subscribe(() => {
       this.openSaveGame();
@@ -580,14 +585,12 @@ export class BattleshipGameComponent implements AfterViewInit{
     this.selfBoard.getCell(initialRow, initialCol).ship = ship;
   }
 
-
   changeShipColorWhenFailPositioning(shipHTML: HTMLElement) {
     shipHTML.classList.add('borderChange')
     setTimeout(() => {
       shipHTML.classList.remove('borderChange')
     }, 1000);
   }
-
 
   setWidthAndHeight(coordinate : Coordinate, shipHTML : HTMLElement) {
     shipHTML.style.width = coordinate.getLeftString();
@@ -612,6 +615,62 @@ export class BattleshipGameComponent implements AfterViewInit{
         rivalBoard : this.rivalBoard,
       },
     });
+  }
+
+  openRestartGame() {
+    const dialogRef = this.dialog.open(RestartGameDialogComponent);
+
+    dialogRef.componentInstance.restart.subscribe((data) => {
+
+      this.disableTableInteraction = false;
+      this.selfBoard = new Board();
+      this.rivalBoard = new Board();
+
+      for (let cell of data.selfBoard) {
+        this.selfBoard.setCell(cell);
+      }
+      for (let cell of data.rivalBoard) {
+        this.rivalBoard.setCell(cell);
+      }
+      this.restartGame(data.ships);
+    });
+  }
+
+  restartGame(tables: Ship[][]) {
+
+    let board = this.selfBoard;
+    let map = this.mapShipSelf;
+    let cells = this.listSelfCell;
+    let shipList = this.selfShipList;
+
+    for (let table of tables) {
+      for (let ship of table) {
+        this.selectedShip = shipList.find(selfShip => selfShip.type === ship.type)!;
+        Object.assign(this.selectedShip, ship);
+
+        const shipHTML = map.get(ship.type);
+        const cellHTML = cells.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+
+        let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
+        if (!ship.isHorizontal) {
+          this.setWidthAndHeight(dimension, shipHTML);
+        }
+        else{
+          shipHTML.style.width = dimension.getTopString();
+          shipHTML.style.height = dimension.getLeftString();
+        }
+
+        let coordinate = this.getCoordinate(cellHTML, 0);
+        this.setTopAndLeft(coordinate, shipHTML);
+        cellHTML.appendChild(shipHTML);
+        this.emptyOrFillCellsWithShips(board, undefined, ship.head!);
+        this.selectedShip.oldHead = ship.head!;
+      }
+      board = this.rivalBoard;
+      map = this.mapShipRival;
+      cells = this.listRivalCell;
+      shipList = this.rivalShipList;
+    }
   }
 
 }

@@ -16,6 +16,13 @@ export class GameRestService {
     return this.http.post<Ship[]>(this.baseurl + '/' + userId + '/games/save', { game : game });
   }
 
+  fetchAllGamesByUserId(id : number): Observable<Game[]> {
+    return this.http.get<Game[]>(this.baseurl + '/' + id + '/games');
+  }
+
+  restartGame(userId : number, gameId : number): Observable<any> {
+    return this.http.get(this.baseurl + '/' + userId + '/games/' + gameId);
+  }
 
 
 }

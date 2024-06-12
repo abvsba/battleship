@@ -27,7 +27,7 @@ export class Board {
   }
 
   setCell(cell : Cell) {
-    this.board[cell.row][cell.col] = cell;
+    this.board[cell.row][cell.col] = new Cell(cell.row, cell.col, undefined, cell.hit);
   }
 
   checkProbability(row: number, col: number) {
