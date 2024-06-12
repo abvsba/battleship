@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Game name</h2>
+
+<mat-dialog-content>
+
+  <form [formGroup]="saveForm">
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name"/>
+      <mat-error *ngIf="saveForm.controls['name'].invalid">name is required</mat-error>
+    </mat-form-field>
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button cdkFocusInitial mat-dialog-close mat-raised-button>Close</button>
+  <button (click)="saveGame()" [disabled]="isInvalid()" mat-flat-button color="warn">Accept</button>
+</mat-dialog-actions>

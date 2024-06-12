@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {LoginRegisterDialogComponent} from "./login-register-dialog/login-register-dialog.component";
 import {UserRestService} from "./service/userRest.service";
+import {EventService} from "./service/eventService";
+import {Router} from "@angular/router";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -10,7 +12,14 @@ import {UserRestService} from "./service/userRest.service";
 export class AppComponent {
   title = 'BattleShip';
 
-  constructor(private dialog: MatDialog, private auth : UserRestService) {
+  constructor(private dialog: MatDialog,
+              private events : EventService,
+              private auth : UserRestService,
+              private router: Router) {
+  }
+
+  isGameRouteActive(): boolean {
+    return this.router.url === '/game';
   }
 
   login(): void {
@@ -19,6 +28,10 @@ export class AppComponent {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  saveGame() {
+    this.events.triggerSaveGame();
   }
 
   isAuthenticated(): boolean {
