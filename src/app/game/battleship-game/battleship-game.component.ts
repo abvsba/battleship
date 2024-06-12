@@ -603,7 +603,7 @@ export class BattleshipGameComponent implements AfterViewInit{
   openSaveGame() {
     this.dialog.open(SaveGameDialogComponent,{
       data: {
-        totalHits : this.totalPlayerHits,
+        totalPlayerHits : this.totalPlayerHits,
         fireDirection : this.fireDirection,
         previousShots : this.previousShots,
         selfShip: this.selfShipList,

@@ -1,11 +1,12 @@
 import {Component, Inject} from '@angular/core';
 import {Cell} from "../../../shared/models/cell.model";
-import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog";
 import {Board} from "../../../shared/models/board.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserRestService} from "../../service/userRest.service";
 import {Game} from "../../../shared/models/game.model";
 import {GameRestService} from "../../service/gameRest.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-save-game-dialog',
@@ -22,7 +23,11 @@ export class SaveGameDialogComponent {
   rivalBoard! : Board;
   game! : Game;
 
-  constructor(@Inject(MAT_DIALOG_DATA) data: any, private restService: GameRestService, private auth : UserRestService) {
+  constructor(@Inject(MAT_DIALOG_DATA) data: any,
+              private restService: GameRestService,
+              private auth : UserRestService,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog) {
 
     this.selfBoard = data.selfBoard;
     this.rivalBoard = data.rivalBoard;
@@ -32,7 +37,7 @@ export class SaveGameDialogComponent {
     this.game = {
       id: undefined,
       name: undefined,
-      totalHits: data.totalHits,
+      totalPlayerHits: data.totalPlayerHits,
       fireDirection : data.fireDirection,
       previousShots : data.previousShots,
       selfShips: data.selfShip,
@@ -45,7 +50,17 @@ export class SaveGameDialogComponent {
 
   saveGame() {
     this.game.name = this.saveForm.value.name!
-    this.restService.saveGame(this.game, this.auth.getUser().id).subscribe();
+    this.restService.saveGame(this.game, this.auth.getUser().id).subscribe({
+      next: () => {
+        this.dialog.closeAll();
+        this.snackBar.open('Game saved successfully', 'Close', {
+          duration: 3000,
+        });
+      },
+      error: (error) => {
+        //TODO
+      },
+    });
   }
 
   isInvalid() {
