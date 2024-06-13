@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {User} from "../../shared/models/user.model";
+import {User} from "../../../shared/models/user.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {UserRestService} from "../../service/userRest.service";

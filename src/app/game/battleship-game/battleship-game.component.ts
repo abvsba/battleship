@@ -8,7 +8,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialog.component";
 import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
 import {EventService} from "../../../service/eventService";
-import {RestartGameComponent} from "../restart-game-dialog/restart-game.component";
+import {RestartGameDialogComponent} from "../restart-game-dialog/restart-game-dialog.component";
 import {take} from "rxjs";
 
 @Component({
@@ -597,14 +597,12 @@ export class BattleshipGameComponent implements AfterViewInit {
     this.selfBoard.getCell(initialRow, initialCol).ship = ship;
   }
 
-
   changeShipColorWhenFailPositioning(shipHTML: HTMLElement) {
     shipHTML.classList.add('borderChange')
     setTimeout(() => {
       shipHTML.classList.remove('borderChange')
     }, 1000);
   }
-
 
   setWidthAndHeight(coordinate : Coordinate, shipHTML : HTMLElement) {
     shipHTML.style.width = coordinate.getLeftString();
@@ -632,7 +630,7 @@ export class BattleshipGameComponent implements AfterViewInit {
   }
 
   openRestartGame() {
-    const dialogRef = this.dialog.open(RestartGameComponent);
+    const dialogRef = this.dialog.open(RestartGameDialogComponent);
 
     dialogRef.componentInstance.restart.subscribe((data) => {
 
