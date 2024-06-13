@@ -16,13 +16,13 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {UserRestService} from "./service/userRest.service";
-import {InterceptorService, SecondInterceptor} from "./service/interceptor.service";
+import {UserRestService} from "../service/userRest.service";
+import {InterceptorService, SecondInterceptor} from "../service/interceptor.service";
 import { ProfileComponent } from './user/profile/profile.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import { SaveGameDialogComponent } from './game/save-game-dialog/save-game-dialog.component';
+import {RestartGameDialogComponent} from "./game/restart-game-dialog/restart-game-dialog.component";
 import {MatMenuModule} from "@angular/material/menu";
-import { RestartGameDialogComponent } from './game/restart-game-dialog/restart-game-dialog.component';
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTableModule} from "@angular/material/table";
 

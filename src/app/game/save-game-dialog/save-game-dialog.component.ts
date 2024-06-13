@@ -3,9 +3,9 @@ import {Cell} from "../../../shared/models/cell.model";
 import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog";
 import {Board} from "../../../shared/models/board.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {UserRestService} from "../../service/userRest.service";
+import {UserRestService} from "../../../service/userRest.service";
 import {Game} from "../../../shared/models/game.model";
-import {GameRestService} from "../../service/gameRest.service";
+import {GameRestService} from "../../../service/gameRest.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
@@ -58,8 +58,8 @@ export class SaveGameDialogComponent {
         });
       },
       error: (error) => {
-        //TODO
-      },
+        this.snackBar.open(error.error.message, 'Error', {duration: 3000});
+      }
     });
   }
 

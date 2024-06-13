@@ -1,7 +1,8 @@
 <mat-toolbar>
 
-
-  <span>Battleship</span>
+  <button mat-button routerLink="/">
+    <span>Battleship</span>
+  </button>
 
   <div>
     <button (click)="login()" *ngIf="!isAuthenticated()" mat-button>
@@ -33,8 +34,8 @@
 </mat-toolbar>
 
 <mat-menu #game_menu="matMenu">
-  <button mat-menu-item (click)="saveGame()"> <mat-icon>save</mat-icon> Save game</button>
   <button mat-menu-item (click)="restartGame()"> <mat-icon>restart_alt</mat-icon> Restart game</button>
+  <button mat-menu-item (click)="saveGame()"> <mat-icon>save</mat-icon> Save game</button>
 </mat-menu>
 
 
