@@ -8,11 +8,9 @@ export class EventService {
 
   private restartGameSubject = new Subject<void>();
   private saveGameSubject = new Subject<void>();
-  private restartGameSubject = new Subject<void>();
 
   restartGame$ = this.restartGameSubject.asObservable();
   saveGame$ = this.saveGameSubject.asObservable();
-  restartGame$ = this.restartGameSubject.asObservable();
 
   triggerSaveGame() {
     this.saveGameSubject.next();
