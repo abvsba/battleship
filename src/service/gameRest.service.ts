@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Observable} from "rxjs";
-import {Game} from "../../shared/models/game.model";
-import {Ship} from "../../shared/models/ship.model";
+import {Game} from "../shared/models/game.model";
+import {Ship} from "../shared/models/ship.model";
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +16,12 @@ export class GameRestService {
     return this.http.post<Ship[]>(this.baseurl + '/' + userId + '/games/save', { game : game });
   }
 
+  findAllGames(userId : number): Observable<Game[]> {
+    return this.http.get<Game[]>(this.baseurl + '/' + userId + '/games');
+  }
 
+  restartGame(id : number, userId : number): Observable<any> {
+    return this.http.get(this.baseurl + '/' + userId + '/games/' + id);
+  }
 
 }

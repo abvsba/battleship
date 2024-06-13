@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {catchError, EMPTY, first, Observable, tap, throwError} from 'rxjs';
 
-import {User} from "../../shared/models/user.model";
+import {User} from "../shared/models/user.model";
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";

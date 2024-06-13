@@ -7,14 +7,16 @@ import {GameBot} from "../../../shared/models/game-bot.model";
 import {MatDialog} from "@angular/material/dialog";
 import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialog.component";
 import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
-import {EventService} from "../../service/eventService";
+import {EventService} from "../../../service/eventService";
+import {RestartGameComponent} from "../restart-game-dialog/restart-game.component";
+import {take} from "rxjs";
 
 @Component({
   selector: 'app-battleship-game',
   templateUrl: './battleship-game.component.html',
   styleUrls: ['./battleship-game.component.css']
 })
-export class BattleshipGameComponent implements AfterViewInit{
+export class BattleshipGameComponent implements AfterViewInit {
   @ViewChildren('ship_self') listShipSelf!: QueryList<ElementRef>;
   @ViewChildren('ship_rival') listShipRival!: QueryList<ElementRef>;
   @ViewChildren('self_cell') listSelfCell!: QueryList<ElementRef>;
@@ -52,15 +54,22 @@ export class BattleshipGameComponent implements AfterViewInit{
   protected readonly Array = Array;
 
   constructor(private event : EventService, private dialog: MatDialog) {
+    this.event.saveGame$
+      .pipe(take(1))
+      .subscribe(() => {
+        this.openSaveGame();
+    });
+
+    this.event.restartGame$
+      .pipe(take(1))
+      .subscribe(() => {
+        this.openRestartGame();
+    });
   }
 
   ngAfterViewInit(): void {
     this.initShips();
     this.positionShipRandomly();
-
-    this.event.saveGame$.subscribe(() => {
-      this.openSaveGame();
-    });
   }
 
   initShips(): void {
@@ -113,11 +122,10 @@ export class BattleshipGameComponent implements AfterViewInit{
   }
 
   onClickCell(event: Event, row: number, col: number) {
-    if (!this.gameFinish) {
-      const cell = this.rivalBoard.getCell(row, col);
-      let ship = cell.ship!;
-      let cellHTML = event.target as HTMLElement;
+    const cell = this.rivalBoard.getCell(row, col);
+    let ship = cell.ship!;
 
+    if (!this.gameFinish && this.checkValidCellToClick(cell, ship)) {
       if (cell.hasShip()) {
         ship.hit = ++ship.hit;
         cell.hit = 'boom';
@@ -131,7 +139,6 @@ export class BattleshipGameComponent implements AfterViewInit{
       } else {
         cell.hit = 'miss';
       }
-      cellHTML.classList.add('disableClick');
 
       this.turn = 1;
 
@@ -139,6 +146,14 @@ export class BattleshipGameComponent implements AfterViewInit{
         this.botTurn();
       }
     }
+  }
+
+  checkValidCellToClick(cell: Cell, ship: Ship) {
+      if (ship === undefined) {
+        return cell.hit === undefined;
+      } else {
+        return cell.hit === undefined && ship.length !== ship.hit;
+      }
   }
 
   checkWin(hits: number) {
@@ -611,9 +626,88 @@ export class BattleshipGameComponent implements AfterViewInit{
         selfShip: this.selfShipList,
         rivalShip : this.rivalShipList,
         selfBoard : this.selfBoard,
-        rivalBoard : this.rivalBoard,
+        rivalBoard : this.rivalBoard
       },
     });
+  }
+
+  openRestartGame() {
+    const dialogRef = this.dialog.open(RestartGameComponent);
+
+    dialogRef.componentInstance.restart.subscribe((data) => {
+
+      this.disableTableInteraction = false;
+      this.selfBoard = new Board();
+      this.rivalBoard = new Board();
+
+      for (let cell of data.selfBoard) {
+        this.selfBoard.setCell(cell);
+      }
+      for (let cell of data.rivalBoard) {
+        this.rivalBoard.setCell(cell);
+      }
+
+      this.fireDirection = data.fireDirection;
+      this.previousShots = data.previousShots;
+      this.totalPlayerHits = data.totalPlayerHits;
+
+      this.bot = new GameBot(this.selfBoard);
+      this.restartGame(data.ships);
+    });
+  }
+
+  restartGame(tables: Ship[][]) {
+    this.gameFinish = false;
+
+    let board = this.selfBoard;
+    let map = this.mapShipSelf;
+    let cells = this.listSelfCell;
+    let shipList = this.selfShipList;
+    let tableNumber = 0;
+
+    for (let table of tables) {
+      for (let ship of table) {
+        this.selectedShip = shipList.find(selfShip => selfShip.type === ship.type)!;
+        Object.assign(this.selectedShip, ship);
+
+        const shipHTML = map.get(ship.type);
+        const cellHTML = cells.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+
+        let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
+        if (!ship.isHorizontal) {
+          this.setWidthAndHeight(dimension, shipHTML);
+        }
+        else{
+          shipHTML.style.width = dimension.getTopString();
+          shipHTML.style.height = dimension.getLeftString();
+        }
+
+        let coordinate = this.getCoordinate(cellHTML, 0);
+        this.setTopAndLeft(coordinate, shipHTML);
+        cellHTML.appendChild(shipHTML);
+        this.emptyOrFillCellsWithShips(board, undefined, ship.head!);
+        this.selectedShip.oldHead = ship.head!;
+        if (tableNumber === 0) {
+          if (ship.hit === ship.length) {
+            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'red';
+            this.bot.sunkShip(ship);
+          } else {
+            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
+          }
+        } else {
+          if (ship.hit === ship.length) {
+            this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'red';
+          } else {
+            this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
+          }
+        }
+      }
+      board = this.rivalBoard;
+      map = this.mapShipRival;
+      cells = this.listRivalCell;
+      shipList = this.rivalShipList;
+      tableNumber++;
+    }
   }
 
 }

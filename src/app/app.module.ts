@@ -16,12 +16,14 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {UserRestService} from "./service/userRest.service";
-import {InterceptorService, SecondInterceptor} from "./service/interceptor.service";
+import {UserRestService} from "../service/userRest.service";
+import {InterceptorService, SecondInterceptor} from "../service/interceptor.service";
 import { ProfileComponent } from './profile/profile.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import { SaveGameDialogComponent } from './game/save-game-dialog/save-game-dialog.component';
+import {RestartGameComponent} from "./game/restart-game-dialog/restart-game.component";
 import {MatMenuModule} from "@angular/material/menu";
+import {MatRadioModule} from "@angular/material/radio";
 
 
 @NgModule({
@@ -32,7 +34,8 @@ import {MatMenuModule} from "@angular/material/menu";
     FinishGameDialogComponent,
     LoginRegisterDialogComponent,
     ProfileComponent,
-    SaveGameDialogComponent
+    SaveGameDialogComponent,
+    RestartGameComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +51,8 @@ import {MatMenuModule} from "@angular/material/menu";
     FormsModule,
     MatSnackBarModule,
     BrowserAnimationsModule,
-    MatMenuModule
+    MatMenuModule,
+    MatRadioModule
   ],
   providers: [
     UserRestService,

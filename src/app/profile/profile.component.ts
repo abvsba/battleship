@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {User} from "../../shared/models/user.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {UserRestService} from "../service/userRest.service";
+import {UserRestService} from "../../service/userRest.service";
 
 @Component({
   selector: 'app-profile',
@@ -30,7 +30,7 @@ export class ProfileComponent {
 
 
   deleteUser() {
-    this.auth.deleteUser(this.user.id).subscribe()
+    this.auth.deleteUser(this.user.id).subscribe();
   }
 
 
