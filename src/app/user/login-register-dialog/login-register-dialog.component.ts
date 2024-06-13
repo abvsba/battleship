@@ -77,7 +77,7 @@ export class LoginRegisterDialogComponent implements OnInit{
         map(user => {
           return user ? {usernameExist: true} : of(null);
         }),
-        catchError(response => {
+        catchError(() => {
           return of(null);
         })
       );
