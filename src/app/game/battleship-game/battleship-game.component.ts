@@ -48,7 +48,7 @@ export class BattleshipGameComponent implements AfterViewInit {
   previousShots: Cell[] = [];
 
   totalPlayerHits = 0;
-  totalMissilLaunch = 0;
+  totalMissileLaunch = 0;
   gameFinish = false;
 
   rowList: number[] = Array.from({length: 10}, (_, index) => index);
@@ -127,7 +127,7 @@ export class BattleshipGameComponent implements AfterViewInit {
   onClickCell(event: Event, row: number, col: number) {
     const cell = this.rivalBoard.getCell(row, col);
     let ship = cell.ship!;
-    this.totalMissilLaunch++;
+    this.totalMissileLaunch++;
 
     if (!this.gameFinish && this.checkValidCellToClick(cell, ship)) {
       if (cell.hasShip()) {
@@ -174,7 +174,7 @@ export class BattleshipGameComponent implements AfterViewInit {
   saveGameDetails(result : string) {
     const gameDetails : GameDetails = {
       username: this.auth.getUser().username,
-      totalHits: this.totalMissilLaunch,
+      totalHits: this.totalMissileLaunch,
       result : result,
       timeConsumed : 10,
       date: undefined

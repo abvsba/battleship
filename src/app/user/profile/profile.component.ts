@@ -40,7 +40,13 @@ export class ProfileComponent {
 
 
   deleteUser() {
-    this.auth.deleteUser(this.user.id).subscribe();
+    this.auth.deleteUser(this.user.id).subscribe({
+      next: () => {
+        this.snackBar.open('User delete successfully', 'Close', {
+          duration: 3000,
+        });
+      },
+    });
   }
 
 
@@ -53,13 +59,6 @@ export class ProfileComponent {
         this.snackBar.open('Password changed successfully', 'Close', {
           duration: 3000,
         });
-      },
-      error: (error) => {
-        if (error.status === 401) {
-          this.snackBar.open('The old password is incorrect', 'Close', {
-            duration: 3000,
-          });
-        }
       },
     });
   }
