@@ -6,6 +6,9 @@
       <span class="name mt-3">{{ user.username }}</span> <span class="idd">{{ user.email }}</span>
 
       <div class=" d-flex mt-2">
+        <button (click)="showGameHistory()" class="btn1 color2">Game history</button>
+      </div>
+      <div class=" d-flex mt-2">
         <button (click)="triggerChangePassword = true" class="btn1 color2">Change password</button>
       </div>
       <br>
@@ -32,7 +35,7 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>New password</mat-label>
-          <input matInput formControlName="newPassword" type="text"/>
+          <input matInput formControlName="newPassword" type="password"/>
           <mat-error *ngIf="passwordForm.get('newPassword')!.hasError('required')">Password is required</mat-error>
           <mat-error *ngIf="passwordForm.get('newPassword')!.hasError('minlength')">The password has to be at least 4 characters</mat-error>
         </mat-form-field>
@@ -40,5 +43,34 @@
       </form>
     </div>
   </div>
+
+  <div *ngIf="triggerViewHistory">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="Username">
+        <th mat-header-cell *matHeaderCellDef> Username </th>
+        <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Total hits">
+        <th mat-header-cell *matHeaderCellDef> Total Hits </th>
+        <td mat-cell *matCellDef="let element"> {{element.totalHits}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Time consumed">
+        <th mat-header-cell *matHeaderCellDef> Time consumed </th>
+        <td mat-cell *matCellDef="let element"> {{element.timeConsumed}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Result">
+        <th mat-header-cell *matHeaderCellDef> Result </th>
+        <td mat-cell *matCellDef="let element"> {{element.result}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
 </div>
 

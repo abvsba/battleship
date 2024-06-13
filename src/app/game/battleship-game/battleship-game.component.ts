@@ -148,11 +148,7 @@ export class BattleshipGameComponent implements AfterViewInit{
   }
 
   checkWin(hits: number) {
-    if (hits > 2) {
-      this.saveGameDetails('win');
-      return true;
-    }
-    return false;
+    return hits === 17;
   }
 
   showFinalMessage(message: string) {

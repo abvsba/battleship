@@ -53,9 +53,12 @@ export class UserRestService {
   }
 
   saveGameDetail(gameDetails : GameDetails) {
-    return this.http.post(this.BASE_URL + '/' + this.user!.id + '/history', gameDetails);
+    return this.http.post(this.BASE_URL + '/' + this.user!.id + '/histories', gameDetails);
   }
 
+  getGameHistory() {
+    return this.http.get<GameDetails[]>(this.BASE_URL + '/' + this.user!.id + '/histories');
+  }
 
   getToken(): string | undefined{
     return this.user?.token;

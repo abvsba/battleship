@@ -3,6 +3,7 @@ import {User} from "../../../shared/models/user.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {UserRestService} from "../../service/userRest.service";
+import {GameDetails} from "../../../shared/models/gameDetails.model";
 
 @Component({
   selector: 'app-profile',
@@ -13,6 +14,9 @@ export class ProfileComponent {
 
   user! : User;
   triggerChangePassword : boolean = false;
+  triggerViewHistory : boolean = false;
+  displayedColumns: string[] = ['Total hits', 'Time consumed', 'Username', 'Result'];
+  dataSource! : GameDetails[];
 
   passwordForm = new FormGroup({
     oldPassword: new FormControl('', [Validators.required]),
@@ -23,6 +27,12 @@ export class ProfileComponent {
     this.user = this.auth.getUser();
   }
 
+  showGameHistory() {
+    this.triggerViewHistory = true;
+    this.auth.getGameHistory().subscribe((data: GameDetails[]) => {
+      this.dataSource = data;
+    });
+  }
 
   logout() {
     this.auth.logout();
@@ -38,7 +48,7 @@ export class ProfileComponent {
     let oldPassword = this.passwordForm.value.oldPassword!;
     let newPassword = this.passwordForm.value.newPassword!;
 
-    this.auth.patchPassword(this.user.id, oldPassword, newPassword).subscribe({
+    this.auth.patchPassword(oldPassword, newPassword).subscribe({
       next: () => {
         this.snackBar.open('Password changed successfully', 'Close', {
           duration: 3000,
