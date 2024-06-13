@@ -5,6 +5,7 @@ import {first, Observable, tap} from 'rxjs';
 import {User} from "../../shared/models/user.model";
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {Router} from "@angular/router";
+import {GameDetails} from "../../shared/models/gameDetails.model";
 
 @Injectable({
   providedIn: 'root',
@@ -29,8 +30,8 @@ export class UserRestService {
     );
   }
 
-  patchPassword(userid : number, oldPassword: string, newPassword : string) {
-    return this.http.patch(this.BASE_URL + '/' + userid + '/password',
+  patchPassword(oldPassword: string, newPassword : string) {
+    return this.http.patch(this.BASE_URL + '/' + this.user!.id + '/password',
       { oldPassword : oldPassword, newPassword : newPassword });
   }
 
@@ -47,9 +48,12 @@ export class UserRestService {
     this.router.navigate(['']).then();
   }
 
-
   deleteUser(userid : number) {
     return this.http.delete(this.BASE_URL + '/' + userid);
+  }
+
+  saveGameDetail(gameDetails : GameDetails) {
+    return this.http.post(this.BASE_URL + '/' + this.user!.id + '/history', gameDetails);
   }
 
 

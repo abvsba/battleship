@@ -24,6 +24,7 @@ import { SaveGameDialogComponent } from './game/save-game-dialog/save-game-dialo
 import {MatMenuModule} from "@angular/material/menu";
 import { RestartGameDialogComponent } from './game/restart-game-dialog/restart-game-dialog.component';
 import {MatRadioModule} from "@angular/material/radio";
+import {MatTableModule} from "@angular/material/table";
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import {MatRadioModule} from "@angular/material/radio";
     MatSnackBarModule,
     BrowserAnimationsModule,
     MatMenuModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTableModule
   ],
   providers: [
     UserRestService,

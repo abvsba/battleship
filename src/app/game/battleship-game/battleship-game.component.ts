@@ -9,6 +9,8 @@ import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialo
 import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
 import {EventService} from "../../service/eventService";
 import {RestartGameDialogComponent} from "../restart-game-dialog/restart-game-dialog.component";
+import {UserRestService} from "../../service/userRest.service";
+import {GameDetails} from "../../../shared/models/gameDetails.model";
 
 @Component({
   selector: 'app-battleship-game',
@@ -45,6 +47,7 @@ export class BattleshipGameComponent implements AfterViewInit{
   previousShots: Cell[] = [];
 
   totalPlayerHits = 0;
+  totalMissilLaunch = 0;
   gameFinish = false;
 
   rowList: number[] = Array.from({length: 10}, (_, index) => index);
@@ -52,7 +55,7 @@ export class BattleshipGameComponent implements AfterViewInit{
 
   protected readonly Array = Array;
 
-  constructor(private event : EventService, private dialog: MatDialog) {
+  constructor(private event : EventService, private dialog: MatDialog, private auth : UserRestService) {
   }
 
   ngAfterViewInit(): void {
@@ -121,6 +124,7 @@ export class BattleshipGameComponent implements AfterViewInit{
     if (!this.gameFinish) {
       const cell = this.rivalBoard.getCell(row, col);
       let ship = cell.ship!;
+      this.totalMissilLaunch++;
       let cellHTML = event.target as HTMLElement;
 
       if (cell.hasShip()) {
@@ -139,18 +143,34 @@ export class BattleshipGameComponent implements AfterViewInit{
       cellHTML.classList.add('disableClick');
 
       this.turn = 1;
-
       this.botTurn();
     }
   }
 
   checkWin(hits: number) {
-    return hits === 17;
+    if (hits > 2) {
+      this.saveGameDetails('win');
+      return true;
+    }
+    return false;
   }
 
   showFinalMessage(message: string) {
     this.gameFinish = true;
     this.dialog.open(FinishGameDialogComponent, {data:  message});
+    let result = message === 'You win' ? 'win' : 'lose';
+    this.saveGameDetails(result);
+  }
+
+  saveGameDetails(result : string) {
+    const gameDetails : GameDetails = {
+      username: this.auth.getUser().username,
+      totalHits: this.totalMissilLaunch,
+      result : result,
+      timeConsumed : 10,
+      date: undefined
+    };
+    this.auth.saveGameDetail(gameDetails).subscribe();
   }
 
   botTurn() {
@@ -161,118 +181,116 @@ export class BattleshipGameComponent implements AfterViewInit{
         cell = this.bot.getHighestCellToFire();
         validShot = this.validShot(cell);
       } while (validShot == 0);
-    } else {
-      if (this.previousShots.length == 1) {
-        let lastShotCell = this.previousShots.at(0)!;
-        do {
-          let direction = Math.floor(Math.random()*4);
+    } else if (this.previousShots.length == 1) {
+      let lastShotCell = this.previousShots.at(0)!;
+      do {
+        let direction = Math.floor(Math.random() * 4);
 
-          switch (direction) {
-            case 0:
-              if (this.isValidCell(lastShotCell.getRow()-1, lastShotCell.getCol())) {
-                cell = this.bot.cellToFire(lastShotCell.getRow()-1, lastShotCell.getCol());
-                validShot = this.validShot(cell);
-              }
-              break;
-            case 1:
-              if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol()-1)) {
-                cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol()-1);
-                validShot = this.validShot(cell);
-              }
-              break;
-            case 2:
-              if (this.isValidCell(lastShotCell.getRow()+1, lastShotCell.getCol())) {
-                cell = this.bot.cellToFire(lastShotCell.getRow()+1, lastShotCell.getCol());
-                validShot = this.validShot(cell);
-              }
-              break;
-            case 3:
-              if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol()+1)) {
-                cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol()+1);
-                validShot = this.validShot(cell);
-              }
-              break;
-          }
-          if (validShot == 1) {
-            this.fireDirection = direction;
-            if (cell!.ship!.length === cell!.ship!.hit) {
-              this.bot.sunkShip(cell!.ship!);
-              this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
-              if (this.bot.checkBotWin()) {
-                this.showFinalMessage('You lose');
-              } else {
-                this.previousShots = [];
-              }
+        switch (direction) {
+          case 0:
+            if (this.isValidCell(lastShotCell.getRow() - 1, lastShotCell.getCol())) {
+              cell = this.bot.cellToFire(lastShotCell.getRow() - 1, lastShotCell.getCol());
+              validShot = this.validShot(cell);
             }
-          }
-        } while (validShot == 0);
-      } else {
-        let count = 0;
-        do {
-          let lastShotCell = this.previousShots.at(this.previousShots.length-1)!;
-          let direction = this.fireDirection;
-          validShot = 0;
-
-          switch (direction) {
-            case 0:
-              if (this.isValidCell(lastShotCell.getRow()-1, lastShotCell.getCol())) {
-                cell = this.bot.cellToFire(lastShotCell.getRow()-1, lastShotCell.getCol());
-                validShot = this.validShot(cell);
-              }
-              if (validShot == 0 || validShot == 2) {
-                this.fireDirection = 2;
-              }
-              break;
-            case 1:
-              if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol()-1)) {
-                cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol()-1);
-                validShot = this.validShot(cell);
-              }
-              if (validShot == 0 || validShot == 2) {
-                this.fireDirection = 3;
-              }
-              break;
-            case 2:
-              if (this.isValidCell(lastShotCell.getRow()+1, lastShotCell.getCol())) {
-                cell = this.bot.cellToFire(lastShotCell.getRow()+1, lastShotCell.getCol());
-                validShot = this.validShot(cell);
-              }
-              if (validShot == 0 || validShot == 2) {
-                this.fireDirection = 0;
-              }
-              break;
-            case 3:
-              if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol()+1)) {
-                cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol()+1);
-                validShot = this.validShot(cell);
-              }
-              if (validShot == 0 || validShot == 2) {
-                this.fireDirection = 1;
-              }
-              break;
-          }
-          if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
+            break;
+          case 1:
+            if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol() - 1)) {
+              cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol() - 1);
+              validShot = this.validShot(cell);
+            }
+            break;
+          case 2:
+            if (this.isValidCell(lastShotCell.getRow() + 1, lastShotCell.getCol())) {
+              cell = this.bot.cellToFire(lastShotCell.getRow() + 1, lastShotCell.getCol());
+              validShot = this.validShot(cell);
+            }
+            break;
+          case 3:
+            if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol() + 1)) {
+              cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol() + 1);
+              validShot = this.validShot(cell);
+            }
+            break;
+        }
+        if (validShot == 1) {
+          this.fireDirection = direction;
+          if (cell!.ship!.length === cell!.ship!.hit) {
             this.bot.sunkShip(cell!.ship!);
             this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
             if (this.bot.checkBotWin()) {
               this.showFinalMessage('You lose');
             } else {
-              this.previousShots.forEach((c, index) => {
-                if (c.ship?.type === cell!.ship!.type) {
-                  this.previousShots.splice(index);
-                }
-              });
+              this.previousShots = [];
             }
-          } else if ((validShot == 0 || validShot == 2) && count < 2) {
-            this.previousShots = this.previousShots.reverse();
-            count++;
           }
-          if (count >= 2) {
-            this.fireDirection = Math.floor(Math.random()*4);
-            count = 0;
+        }
+      } while (validShot == 0);
+    } else {
+      let count = 0;
+      do {
+        let lastShotCell = this.previousShots.at(this.previousShots.length - 1)!;
+        let direction = this.fireDirection;
+        validShot = 0;
+
+        switch (direction) {
+          case 0:
+            if (this.isValidCell(lastShotCell.getRow() - 1, lastShotCell.getCol())) {
+              cell = this.bot.cellToFire(lastShotCell.getRow() - 1, lastShotCell.getCol());
+              validShot = this.validShot(cell);
+            }
+            if (validShot == 0 || validShot == 2) {
+              this.fireDirection = 2;
+            }
+            break;
+          case 1:
+            if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol() - 1)) {
+              cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol() - 1);
+              validShot = this.validShot(cell);
+            }
+            if (validShot == 0 || validShot == 2) {
+              this.fireDirection = 3;
+            }
+            break;
+          case 2:
+            if (this.isValidCell(lastShotCell.getRow() + 1, lastShotCell.getCol())) {
+              cell = this.bot.cellToFire(lastShotCell.getRow() + 1, lastShotCell.getCol());
+              validShot = this.validShot(cell);
+            }
+            if (validShot == 0 || validShot == 2) {
+              this.fireDirection = 0;
+            }
+            break;
+          case 3:
+            if (this.isValidCell(lastShotCell.getRow(), lastShotCell.getCol() + 1)) {
+              cell = this.bot.cellToFire(lastShotCell.getRow(), lastShotCell.getCol() + 1);
+              validShot = this.validShot(cell);
+            }
+            if (validShot == 0 || validShot == 2) {
+              this.fireDirection = 1;
+            }
+            break;
+        }
+        if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
+          this.bot.sunkShip(cell!.ship!);
+          this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
+          if (this.bot.checkBotWin()) {
+            this.showFinalMessage('You lose');
+          } else {
+            this.previousShots.forEach((c, index) => {
+              if (c.ship?.type === cell!.ship!.type) {
+                this.previousShots.splice(index);
+              }
+            });
           }
-        } while (validShot == 0);
-      }
+        } else if ((validShot == 0 || validShot == 2) && count < 2) {
+          this.previousShots = this.previousShots.reverse();
+          count++;
+        }
+        if (count >= 2) {
+          this.fireDirection = Math.floor(Math.random() * 4);
+          count = 0;
+        }
+      } while (validShot == 0);
     }
 
     this.bot.assessMap();
@@ -343,38 +361,43 @@ export class BattleshipGameComponent implements AfterViewInit{
 
 
   onDropOnTopOfShip(event: DragEvent) {
-    if (this.disableTableInteraction) {
-      this.onDropOnShip = true;
-      let ship = this.selectedShip;
-      let div = event.target as HTMLElement;
+    if (!this.disableTableInteraction) {
+      return;
+    }
+    this.onDropOnShip = true;
+    let ship = this.selectedShip;
+    let div = event.target as HTMLElement;
+    let row, col;
 
-      if (this.selectedShip.type === (div.parentNode as HTMLElement).id) {
+    if (ship.type === (div.parentNode as HTMLElement).id) {
 
-        let dropInDiv = +(div).id;
-        const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
-        let isHorizontal = this.selectedShip.isHorizontal;
+      let dropInDiv = +(div).id;
+      const shipHTML = this.mapShipSelf.get(ship.type);
 
-        const row = isHorizontal ? ship.head!.row : ship.head!.row + dropInDiv - this.selectedDiv;
-        const col = isHorizontal ? ship.head!.col + dropInDiv - this.selectedDiv : ship.head!.col;
+      if (ship.isHorizontal) {
+        row = ship.head!.row;
+        col = ship.head!.col + dropInDiv - this.selectedDiv;
+      } else {
+        row = ship.head!.row + dropInDiv - this.selectedDiv;
+        col = ship.head!.col
+      }
 
-        if (this.assertThereIsNoOverlap(this.selfBoard, new Cell(row, col), true)) {
-          ship.oldHead = new Cell(ship.head!.row, ship.head!.col);
+      if (this.assertThereIsNoOverlap(this.selfBoard, new Cell(row, col), true)) {
+        ship.oldHead = new Cell(ship.head!.row, ship.head!.col);
 
-          if (isHorizontal) {
-            shipHTML.style.left = `${parseInt(shipHTML.style.left) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
-            ship.head!.col = col;
-          } else {
-            shipHTML.style.top = `${parseInt(shipHTML.style.top) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
-            ship.head!.row = row;
-          }
-
-          this.emptyOrFillCellsWithShips(this.selfBoard, ship.oldHead, ship.head);
-          const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
-          cellHTML.appendChild(shipHTML);
+        if (ship.isHorizontal) {
+          shipHTML.style.left = `${parseInt(shipHTML.style.left) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+          ship.head!.col = col;
+        } else {
+          shipHTML.style.top = `${parseInt(shipHTML.style.top) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+          ship.head!.row = row;
         }
-        else {
-          this.changeShipColorWhenFailPositioning(shipHTML);
-        }
+
+        this.emptyOrFillCellsWithShips(this.selfBoard, ship.oldHead, ship.head);
+        const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+        cellHTML.appendChild(shipHTML);
+      } else {
+        this.changeShipColorWhenFailPositioning(shipHTML);
       }
     }
   }
@@ -663,7 +686,7 @@ export class BattleshipGameComponent implements AfterViewInit{
         let coordinate = this.getCoordinate(cellHTML, 0);
         this.setTopAndLeft(coordinate, shipHTML);
         cellHTML.appendChild(shipHTML);
-        this.emptyOrFillCellsWithShips(board, undefined, ship.head!);
+        this.emptyOrFillCellsWithShips(board, undefined, ship.head);
         this.selectedShip.oldHead = ship.head!;
       }
       board = this.rivalBoard;
