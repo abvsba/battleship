@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Observable} from "rxjs";
-import {Game} from "../../shared/models/game.model";
-import {Ship} from "../../shared/models/ship.model";
+import {Game} from "../shared/models/game.model";
+import {Ship} from "../shared/models/ship.model";
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +23,5 @@ export class GameRestService {
   restartGame(userId : number, gameId : number): Observable<any> {
     return this.http.get(this.baseurl + '/' + userId + '/games/' + gameId);
   }
-
 
 }

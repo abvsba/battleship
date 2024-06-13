@@ -2,9 +2,9 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Observable} from "rxjs";
 import {Game} from "../../../shared/models/game.model";
 import {User} from "../../../shared/models/user.model";
-import {GameRestService} from "../../service/gameRest.service";
+import {GameRestService} from "../../../service/gameRest.service";
 import {MatDialog} from "@angular/material/dialog";
-import {UserRestService} from "../../service/userRest.service";
+import {UserRestService} from "../../../service/userRest.service";
 
 @Component({
   selector: 'app-restart-game-dialog',
