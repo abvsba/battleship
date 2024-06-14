@@ -30,11 +30,11 @@ export class RestartGameDialogComponent implements OnInit{
   }
 
   fetchAllGamesByUserId(userId : number): Observable<Game[]> {
-    return this.restService.fetchAllGamesByUserId(userId);
+    return this.restService.fetchAllGamesByUserId();
   }
 
   restartGame() {
-    this.restService.restartGame(this.user.id, this.selectedGameId!)
+    this.restService.restartGame(this.user.id)
       .subscribe( (data : any) => {
         this.restart.emit(data);
         this.dialog.closeAll();

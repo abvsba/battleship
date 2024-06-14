@@ -25,6 +25,7 @@ import {RestartGameDialogComponent} from "./game/restart-game-dialog/restart-gam
 import {MatMenuModule} from "@angular/material/menu";
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTableModule} from "@angular/material/table";
+import { UsersRankingComponent } from './user/users-ranking/users-ranking.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import {MatTableModule} from "@angular/material/table";
     LoginRegisterDialogComponent,
     ProfileComponent,
     SaveGameDialogComponent,
-    RestartGameDialogComponent
+    RestartGameDialogComponent,
+    UsersRankingComponent
   ],
   imports: [
     BrowserModule,

@@ -17,15 +17,15 @@ export class GameRestService {
     this.userId = auth.getUser().id;
   }
 
-  saveGame(game : Game, userId : number): Observable<Ship[]> {
+  saveGame(game : Game): Observable<Ship[]> {
     return this.http.post<Ship[]>(this.baseurl + '/' + this.userId + '/games/save', { game : game });
   }
 
-  fetchAllGamesByUserId(id : number): Observable<Game[]> {
+  fetchAllGamesByUserId(): Observable<Game[]> {
     return this.http.get<Game[]>(this.baseurl + '/' + this.userId + '/games');
   }
 
-  restartGame(userId : number, gameId : number): Observable<any> {
+  restartGame(gameId : number): Observable<any> {
     return this.http.get(this.baseurl + '/' + this.userId + '/games/' + gameId);
   }
 
