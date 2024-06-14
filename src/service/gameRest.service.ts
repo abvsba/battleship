@@ -14,7 +14,7 @@ export class GameRestService {
   userId : number | undefined = undefined;
 
   constructor(private http: HttpClient, private auth : UserRestService) {
-    this.userId = auth.getUser().id;
+    this.userId = this.auth.getUser().id;
   }
 
   saveGame(game : Game): Observable<Ship[]> {
