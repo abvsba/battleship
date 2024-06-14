@@ -59,7 +59,6 @@ export class UserRestService {
     this.router.navigate(['']).then();
   }
 
-
   deleteUser(userid : number) {
     return this.http.delete(this.BASE_URL + '/' + userid)
       .pipe(catchError(error => this.handleError(error)));

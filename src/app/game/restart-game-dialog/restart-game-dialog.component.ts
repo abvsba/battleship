@@ -18,6 +18,7 @@ export class RestartGameDialogComponent implements OnInit{
   selectedGameId: number | null = null;
 
   @Output() restart = new EventEmitter<any>();
+
   constructor(private restService: GameRestService,
               private dialog: MatDialog,
               private auth : UserRestService) {
@@ -37,6 +38,13 @@ export class RestartGameDialogComponent implements OnInit{
       .subscribe( (data : any) => {
         this.restart.emit(data);
         this.dialog.closeAll();
+      });
+  }
+
+  deleteGame(gameId : number) {
+    this.restService.deleteGameById(gameId)
+      .subscribe( () => {
+        this.games$ = this.fetchAllGamesByUserId(this.user.id);
       });
   }
 
