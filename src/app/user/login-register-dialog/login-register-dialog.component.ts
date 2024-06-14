@@ -30,7 +30,7 @@ export class LoginRegisterDialogComponent implements OnInit{
   ngOnInit() {
     this.registerForm = new FormGroup({
       username: new FormControl('', Validators.required, this.checkUsername()),
-      email: new FormControl('', [Validators.required, Validators.email]),
+      email: new FormControl('', [Validators.required, Validators.email], this.checkEmail()),
       password: new FormControl('', [Validators.required, Validators.minLength(4)]),
       confirmPassword: new FormControl('', [Validators.required, this.checkPasswords()])
     });
@@ -73,9 +73,22 @@ export class LoginRegisterDialogComponent implements OnInit{
 
   checkUsername(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<any> => {
-      return this.auth.getUserDDBB(control.value).pipe(
-        map(user => {
-          return user ? {usernameExist: true} : of(null);
+      return this.auth.getUsername(control.value).pipe(
+        map(username => {
+          return username ? {usernameExist: true} : of(null);
+        }),
+        catchError(() => {
+          return of(null);
+        })
+      );
+    };
+  }
+
+  checkEmail(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<any> => {
+      return this.auth.getEmail(control.value).pipe(
+        map(email => {
+          return email ? {emailExist: true} : of(null);
         }),
         catchError(() => {
           return of(null);

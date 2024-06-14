@@ -1,0 +1,43 @@
+
+<div class = 'table-container'>
+  <button class = 'button' (click)="getGameHistotyByUser()" *ngIf="isAuthenticated()"
+          mat-flat-button color="warn">See your game history</button>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="Username">
+      <th mat-header-cell *matHeaderCellDef> Username </th>
+      <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Date">
+      <th mat-header-cell *matHeaderCellDef> Date </th>
+      <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Total hits">
+      <th mat-header-cell *matHeaderCellDef> Total Hits </th>
+      <td mat-cell *matCellDef="let element"> {{element.totalHits}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Time consumed">
+      <th mat-header-cell *matHeaderCellDef> Time consumed </th>
+      <td mat-cell *matCellDef="let element"> {{element.timeConsumed}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Result">
+      <th mat-header-cell *matHeaderCellDef> Result </th>
+      <td mat-cell *matCellDef="let element"> {{element.result}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Punctuation">
+      <th mat-header-cell *matHeaderCellDef> Punctuation </th>
+      <td mat-cell *matCellDef="let element"> {{element.punctuation}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+
+</div>
