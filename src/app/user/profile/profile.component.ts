@@ -6,6 +6,7 @@ import {UserRestService} from "../../../service/userRest.service";
 import {GameDetails} from "../../../shared/models/gameDetails.model";
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteConfirmDialogComponent} from "../delete-confirm-dialog/delete-confirm-dialog.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-profile',
@@ -24,12 +25,14 @@ export class ProfileComponent {
   });
 
   constructor(private auth : UserRestService, private snackBar: MatSnackBar,
-              private dialog: MatDialog) {
+              private dialog: MatDialog, private router: Router) {
     this.user = this.auth.getUser();
   }
 
   logout() {
-    this.auth.logout();
+    this.router.navigate(['/']).then(() => {
+      this.auth.logout();
+    });
   }
 
   toggleChangePassword() {
