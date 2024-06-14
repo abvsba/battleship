@@ -11,6 +11,9 @@
 
         <span> {{game.name}}</span><br>
         <span> {{game.date}}</span>
+        <button (click)="deleteGame(game.id!)" mat-button>
+          <mat-icon color="warn">close</mat-icon>
+        </button>
       </mat-radio-button>
     </mat-radio-group>
   </div>

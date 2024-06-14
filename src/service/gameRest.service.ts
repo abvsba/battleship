@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {Observable} from "rxjs";
 import {Game} from "../shared/models/game.model";
 import {Ship} from "../shared/models/ship.model";
+import {UserRestService} from "./userRest.service";
 
 @Injectable({
   providedIn: 'root',
@@ -10,18 +11,25 @@ import {Ship} from "../shared/models/ship.model";
 export class GameRestService {
   private baseurl = 'http://localhost:3000/users';
 
-  constructor(private http: HttpClient) {}
+  userId : number | undefined = undefined;
+
+  constructor(private http: HttpClient, private auth : UserRestService) {
+    this.userId = auth.getUser().id;
+  }
 
   saveGame(game : Game, userId : number): Observable<Ship[]> {
-    return this.http.post<Ship[]>(this.baseurl + '/' + userId + '/games/save', { game : game });
+    return this.http.post<Ship[]>(this.baseurl + '/' + this.userId + '/games/save', { game : game });
   }
 
   fetchAllGamesByUserId(id : number): Observable<Game[]> {
-    return this.http.get<Game[]>(this.baseurl + '/' + id + '/games');
+    return this.http.get<Game[]>(this.baseurl + '/' + this.userId + '/games');
   }
 
   restartGame(userId : number, gameId : number): Observable<any> {
-    return this.http.get(this.baseurl + '/' + userId + '/games/' + gameId);
+    return this.http.get(this.baseurl + '/' + this.userId + '/games/' + gameId);
   }
 
+  deleteGameById(gameId : number) {
+    return this.http.delete(this.baseurl + '/' + this.userId + '/games/' + gameId);
+  }
 }
