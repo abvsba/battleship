@@ -32,7 +32,8 @@
            [style.width.px]="ship.length * 40"
            [style.left.px]="50"
            [style.top.px]="i*50 + 450"
-           [ngClass]="{'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
+           [ngClass]="{'ship-color': ship.isVisible,
+           'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
            (click)="onClickShip(ship)"
            (dragstart)="onDragStart(ship)"
@@ -78,7 +79,8 @@
          [style.width.px]="ship.length * 40"
          [style.left.px]="50"
          [style.top.px]="i*50 + 450"
-         [ngClass]="{'hide-ship': !ship.isVisible, 'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
+         [ngClass]="{'hide-ship': !ship.isVisible, 'ship-color': ship.isVisible,
+          'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
     </div>
   </div>
 

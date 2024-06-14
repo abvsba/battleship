@@ -246,6 +246,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
           this.fireDirection = direction;
           if (cell!.ship!.length === cell!.ship!.hit) {
             this.bot.sunkShip(cell!.ship!);
+            cell!.ship!.isVisible = true;
             this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
             if (this.bot.checkBotWin()) {
               this.showFinalMessage('You lose');
@@ -302,6 +303,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         }
         if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
           this.bot.sunkShip(cell!.ship!);
+          cell!.ship!.isVisible = true;
           this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
           if (this.bot.checkBotWin()) {
             this.showFinalMessage('You lose');
