@@ -32,6 +32,9 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
 
   private destroyed = new Subject<void>();
 
+  gameTimePid: any;
+  gameTime = 0;
+
   mapShipStatRival: Map<string, HTMLElement> = new Map();
   mapShipStatSelf: Map<string, HTMLElement> = new Map();
 
@@ -59,6 +62,10 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   totalMissileLaunch = 0;
   gameFinish = false;
   gameRestarted = false;
+
+  listNum: string[] = ['', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+  listNumRival: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', ''];
+  listChar: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   rowList: number[] = Array.from({length: 10}, (_, index) => index);
   colList: number[] = Array.from({length: 10}, (_, index) => index);
@@ -184,10 +191,11 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
 
   showFinalMessage(message: string) {
     this.gameFinish = true;
+    clearInterval(this.gameTimePid);
     this.dialog.open(FinishGameDialogComponent, {data:  message});
     let result = message === 'You win' ? 'win' : 'lose';
 
-    if (!this.gameRestarted) {
+    if (!this.gameRestarted && this.auth.isAuthenticated()) {
       this.saveGameDetails(result);
     }
   }
@@ -197,7 +205,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       username: this.auth.getUser().username,
       totalHits: this.totalMissileLaunch,
       result : result,
-      timeConsumed : 10,
+      timeConsumed : this.gameTime,
       date: undefined
     };
     this.auth.saveGameDetail(gameDetails).subscribe();
@@ -493,6 +501,11 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   startGame() {
     this.disableTableInteraction = false;
 
+    this.gameTime = 0;
+    this.gameTimePid = window.setInterval(() => {
+      this.gameTime += 1;
+    }, 1000);
+
     this.turn = 0;
     this.previousShots = [];
     this.totalPlayerHits = 0;
@@ -695,6 +708,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   restartGame(tables: Ship[][]) {
     this.gameFinish = false;
     this.gameRestarted = true;
+    this.gameTime = 0;
+    clearInterval(this.gameTimePid);
 
     let board = this.selfBoard;
     let map = this.mapShipSelf;
