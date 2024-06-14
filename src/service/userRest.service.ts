@@ -50,8 +50,12 @@ export class UserRestService {
       .pipe(catchError(error => this.handleError(error)));
   }
 
-  getUserDDBB(username: string) {
-    return this.http.get(this.BASE_URL + '/' + username);
+  getUsername(username: string) {
+    return this.http.get(this.BASE_URL + '/' + username + '/username');
+  }
+
+  getEmail(email: string) {
+    return this.http.get(this.BASE_URL + '/' + email + '/email');
   }
 
   logout() {
@@ -69,8 +73,12 @@ export class UserRestService {
     return this.http.post(this.BASE_URL + '/' + this.user!.id + '/histories', gameDetails);
   }
 
-  getGameHistory() {
+  getGameUserHistory() {
     return this.http.get<GameDetails[]>(this.BASE_URL + '/' + this.user!.id + '/histories');
+  }
+
+  getGameHistory() {
+    return this.http.get<GameDetails[]>(this.BASE_URL + '/histories');
   }
 
   getToken(): string | undefined{

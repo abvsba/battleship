@@ -25,7 +25,6 @@ export class SaveGameDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) data: any,
               private restService: GameRestService,
-              private auth : UserRestService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
 
@@ -50,7 +49,7 @@ export class SaveGameDialogComponent {
 
   saveGame() {
     this.game.name = this.saveForm.value.name!
-    this.restService.saveGame(this.game, this.auth.getUser().id).subscribe({
+    this.restService.saveGame(this.game).subscribe({
       next: () => {
         this.dialog.closeAll();
         this.snackBar.open('Game saved successfully', 'Close', {

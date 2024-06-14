@@ -17,8 +17,6 @@ export class ProfileComponent {
 
   user! : User;
   triggerChangePassword : boolean = false;
-  triggerViewHistory : boolean = false;
-  displayedColumns: string[] = ['Total hits', 'Time consumed', 'Username', 'Result'];
   dataSource! : GameDetails[];
 
   passwordForm = new FormGroup({
@@ -31,19 +29,15 @@ export class ProfileComponent {
     this.user = this.auth.getUser();
   }
 
-  showGameHistory() {
-    this.triggerViewHistory = true;
-    this.auth.getGameHistory().subscribe((data: GameDetails[]) => {
-      this.dataSource = data;
-    });
-  }
-
   logout() {
     this.router.navigate(['/']).then(() => {
       this.auth.logout();
     });
   }
 
+  toggleChangePassword() {
+    this.triggerChangePassword = !this.triggerChangePassword;
+  }
 
   deleteUser() {
     this.dialog.open(DeleteConfirmDialogComponent);

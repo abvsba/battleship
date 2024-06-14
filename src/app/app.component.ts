@@ -26,10 +26,6 @@ export class AppComponent {
     this.dialog.open(LoginRegisterDialogComponent);
   }
 
-  logout(): void {
-    this.auth.logout();
-  }
-
   saveGame() {
     this.events.triggerSaveGame();
   }

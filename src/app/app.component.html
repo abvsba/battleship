@@ -15,9 +15,9 @@
       <span>Profile</span>
     </button>
 
-    <button (click)="logout()" *ngIf="isAuthenticated()" mat-button>
-      <mat-icon>person_outline</mat-icon>
-      <span>Logout</span>
+    <button routerLink="/ranking" mat-button>
+      <mat-icon>bar_chart</mat-icon>
+      <span>Ranking</span>
     </button>
 
     <button mat-button routerLink="/game">
