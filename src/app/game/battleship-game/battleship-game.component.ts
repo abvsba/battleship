@@ -195,7 +195,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     this.dialog.open(FinishGameDialogComponent, {data:  message});
     let result = message === 'You win' ? 'win' : 'lose';
 
-    if (!this.gameRestarted && this.auth.isAuthenticated()) {
+    if (!this.gameRestarted) {
       this.saveGameDetails(result);
     }
   }
