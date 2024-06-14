@@ -12,7 +12,7 @@ export class Ship {
 
 
   constructor(type: string, length: number, isHorizontal : boolean = true,
-              isVisible : boolean = true, hit : number = 0, oldHead? : Cell, head? : Cell) {
+              isVisible : boolean = false, hit : number = 0, oldHead? : Cell, head? : Cell) {
     this.type = type;
     this.length = length;
     this.isHorizontal = isHorizontal;

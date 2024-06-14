@@ -35,7 +35,7 @@ table {
   width: 40px;
   height: 40px;
   border: 1px solid white;
-  background-color: lightblue;
+  background-color: #9DD1F1;
 }
 
 .ship {
@@ -63,6 +63,11 @@ table {
   visibility: hidden;
 }
 
+.ship-color {
+  background-color: #EE7674;
+  border: 1px solid red;
+}
+
 .ship-stat {
   height: 12px;
   position: absolute;
@@ -77,7 +82,7 @@ table {
 }
 
 @keyframes colorChange {
-  50%  {border-color: red; background-color: indianred}
+  50%  {border-color: red; background-color: #EE7674}
 }
 
 .miss,
@@ -102,7 +107,7 @@ table {
 }
 
 .boom::after {
-  background-color: red;
+  background-color: #EE7674;
   animation: boom .3s ease-out forwards;
 }
 
@@ -111,7 +116,7 @@ table {
     background-color: white;
   }
   100% {
-    background-color: red;
+    background-color: #EE7674;
   }
 }
 

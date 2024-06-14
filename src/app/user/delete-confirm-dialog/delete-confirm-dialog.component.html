@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Confirm delete</h2>
+
+<mat-dialog-content>
+
+  {{message}}
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button cdkFocusInitial mat-dialog-close mat-raised-button>No</button>
+  <button (click)=confirmDelete() mat-flat-button color="warn">Yes</button>
+</mat-dialog-actions>

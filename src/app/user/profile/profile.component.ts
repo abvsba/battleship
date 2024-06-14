@@ -4,6 +4,8 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {UserRestService} from "../../../service/userRest.service";
 import {GameDetails} from "../../../shared/models/gameDetails.model";
+import {MatDialog} from "@angular/material/dialog";
+import {DeleteConfirmDialogComponent} from "../delete-confirm-dialog/delete-confirm-dialog.component";
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +23,8 @@ export class ProfileComponent {
     newPassword: new FormControl('',[Validators.required, Validators.minLength(4)])
   });
 
-  constructor(private auth : UserRestService, private snackBar: MatSnackBar) {
+  constructor(private auth : UserRestService, private snackBar: MatSnackBar,
+              private dialog: MatDialog) {
     this.user = this.auth.getUser();
   }
 
@@ -34,13 +37,7 @@ export class ProfileComponent {
   }
 
   deleteUser() {
-    this.auth.deleteUser(this.user.id).subscribe({
-      next: () => {
-        this.snackBar.open('User delete successfully', 'Close', {
-          duration: 3000,
-        });
-      },
-    });
+    this.dialog.open(DeleteConfirmDialogComponent);
   }
 
 

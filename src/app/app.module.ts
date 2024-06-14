@@ -26,6 +26,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTableModule} from "@angular/material/table";
 import { UsersRankingComponent } from './user/users-ranking/users-ranking.component';
+import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delete-confirm-dialog.component';
 
 
 @NgModule({
@@ -38,7 +39,9 @@ import { UsersRankingComponent } from './user/users-ranking/users-ranking.compon
     ProfileComponent,
     SaveGameDialogComponent,
     RestartGameDialogComponent,
-    UsersRankingComponent
+    UsersRankingComponent,
+    RestartGameDialogComponent,
+    DeleteConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
