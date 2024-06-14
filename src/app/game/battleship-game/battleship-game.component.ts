@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Ship} from "../../../shared/models/ship.model";
 import {Board} from "../../../shared/models/board.model";
 import {Cell} from "../../../shared/models/cell.model";
@@ -9,7 +9,7 @@ import {FinishGameDialogComponent} from "../finish-game-dialog/finish-game-dialo
 import {SaveGameDialogComponent} from "../save-game-dialog/save-game-dialog.component";
 import {EventService} from "../../../service/eventService";
 import {RestartGameDialogComponent} from "../restart-game-dialog/restart-game-dialog.component";
-import {take} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {UserRestService} from "../../../service/userRest.service";
 import {GameDetails} from "../../../shared/models/gameDetails.model";
 
@@ -18,11 +18,19 @@ import {GameDetails} from "../../../shared/models/gameDetails.model";
   templateUrl: './battleship-game.component.html',
   styleUrls: ['./battleship-game.component.css']
 })
-export class BattleshipGameComponent implements AfterViewInit {
+export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
+  audioMissPath = '../../../assets/sounds/medium-explosion-40472.mp3';
+  audioHitPath = '../../../assets/sounds/blast-37988.mp3';
+
   @ViewChildren('ship_self') listShipSelf!: QueryList<ElementRef>;
   @ViewChildren('ship_rival') listShipRival!: QueryList<ElementRef>;
   @ViewChildren('self_cell') listSelfCell!: QueryList<ElementRef>;
   @ViewChildren('rival_cell') listRivalCell!: QueryList<ElementRef>;
+
+  audioMissileMissed = new Audio(this.audioMissPath);
+  audioMissileHit = new Audio(this.audioHitPath)
+
+  private destroyed = new Subject<void>();
 
   mapShipStatRival: Map<string, HTMLElement> = new Map();
   mapShipStatSelf: Map<string, HTMLElement> = new Map();
@@ -50,6 +58,7 @@ export class BattleshipGameComponent implements AfterViewInit {
   totalPlayerHits = 0;
   totalMissileLaunch = 0;
   gameFinish = false;
+  gameRestarted = false;
 
   rowList: number[] = Array.from({length: 10}, (_, index) => index);
   colList: number[] = Array.from({length: 10}, (_, index) => index);
@@ -58,16 +67,21 @@ export class BattleshipGameComponent implements AfterViewInit {
 
   constructor(private event : EventService, private dialog: MatDialog, private auth : UserRestService) {
     this.event.saveGame$
-      .pipe(take(1))
+      .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
         this.openSaveGame();
     });
 
     this.event.restartGame$
-      .pipe(take(1))
+      .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
         this.openRestartGame();
     });
+  }
+
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   ngAfterViewInit(): void {
@@ -134,6 +148,8 @@ export class BattleshipGameComponent implements AfterViewInit {
         ship.hit = ++ship.hit;
         cell.hit = 'boom';
         this.totalPlayerHits++;
+        this.audioMissileHit.load();
+        this.audioMissileHit.play().then(r => {});
         if (ship.length === ship.hit) {
           this.showShipWhenAllHit(ship);
           if (this.checkWin(this.totalPlayerHits)) {
@@ -142,6 +158,8 @@ export class BattleshipGameComponent implements AfterViewInit {
         }
       } else {
         cell.hit = 'miss';
+        this.audioMissileMissed.load();
+        this.audioMissileMissed.play().then(r => {});
       }
 
       this.turn = 1;
@@ -168,7 +186,10 @@ export class BattleshipGameComponent implements AfterViewInit {
     this.gameFinish = true;
     this.dialog.open(FinishGameDialogComponent, {data:  message});
     let result = message === 'You win' ? 'win' : 'lose';
-    this.saveGameDetails(result);
+
+    if (!this.gameRestarted) {
+      this.saveGameDetails(result);
+    }
   }
 
   saveGameDetails(result : string) {
@@ -660,9 +681,9 @@ export class BattleshipGameComponent implements AfterViewInit {
         this.rivalBoard.setCell(cell);
       }
 
-      this.fireDirection = data.fireDirection;
+      this.fireDirection = data.gameData[0].fireDirection;
       this.previousShots = data.previousShots;
-      this.totalPlayerHits = data.totalPlayerHits;
+      this.totalPlayerHits = data.gameData[0].totalHits;
 
       this.bot = new GameBot(this.selfBoard);
       this.restartGame(data.ships);
@@ -671,6 +692,7 @@ export class BattleshipGameComponent implements AfterViewInit {
 
   restartGame(tables: Ship[][]) {
     this.gameFinish = false;
+    this.gameRestarted = true;
 
     let board = this.selfBoard;
     let map = this.mapShipSelf;
