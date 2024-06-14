@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Ship} from "../../../shared/models/ship.model";
 import {Board} from "../../../shared/models/board.model";
 import {Cell} from "../../../shared/models/cell.model";
@@ -19,10 +19,16 @@ import {GameDetails} from "../../../shared/models/gameDetails.model";
   styleUrls: ['./battleship-game.component.css']
 })
 export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
+  audioMissPath = '../../../assets/sounds/medium-explosion-40472.mp3';
+  audioHitPath = '../../../assets/sounds/blast-37988.mp3';
+
   @ViewChildren('ship_self') listShipSelf!: QueryList<ElementRef>;
   @ViewChildren('ship_rival') listShipRival!: QueryList<ElementRef>;
   @ViewChildren('self_cell') listSelfCell!: QueryList<ElementRef>;
   @ViewChildren('rival_cell') listRivalCell!: QueryList<ElementRef>;
+
+  audioMissileMissed = new Audio(this.audioMissPath);
+  audioMissileHit = new Audio(this.audioHitPath)
 
   private destroyed = new Subject<void>();
 
@@ -142,6 +148,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         ship.hit = ++ship.hit;
         cell.hit = 'boom';
         this.totalPlayerHits++;
+        this.audioMissileHit.load();
+        this.audioMissileHit.play().then(r => {});
         if (ship.length === ship.hit) {
           this.showShipWhenAllHit(ship);
           if (this.checkWin(this.totalPlayerHits)) {
@@ -150,6 +158,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         }
       } else {
         cell.hit = 'miss';
+        this.audioMissileMissed.load();
+        this.audioMissileMissed.play().then(r => {});
       }
 
       this.turn = 1;
