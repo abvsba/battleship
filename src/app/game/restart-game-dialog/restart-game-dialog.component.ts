@@ -26,10 +26,10 @@ export class RestartGameDialogComponent implements OnInit{
 
   ngOnInit(): void {
     this.user = this.auth.getUser()
-    this.games$ = this.fetchAllGamesByUserId(this.user.id);
+    this.games$ = this.fetchAllGamesByUserId();
   }
 
-  fetchAllGamesByUserId(userId : number): Observable<Game[]> {
+  fetchAllGamesByUserId(): Observable<Game[]> {
     return this.restService.fetchAllGamesByUserId();
   }
 
@@ -44,7 +44,7 @@ export class RestartGameDialogComponent implements OnInit{
   deleteGame(gameId : number) {
     this.restService.deleteGameById(gameId)
       .subscribe( () => {
-        this.games$ = this.fetchAllGamesByUserId(this.user.id);
+        this.games$ = this.fetchAllGamesByUserId();
       });
   }
 
