@@ -3,7 +3,7 @@
     <div class=" image d-flex flex-column justify-content-center align-items-center">
       <h3> Profile</h3><br>
       <button class="btn btn-secondary"><img src="https://i.imgur.com/wvxPV9S.png" height="100" width="100" alt=""/></button>
-      <span class="name mt-3">{{ user.username }}</span> <span class="idd">{{ user.email }}</span>
+      <span class="name mt-3">{{ user?.username }}</span> <span class="idd">{{ user?.email }}</span>
 
       <div class=" d-flex mt-2">
         <button (click)="toggleChangePassword()" class="btn1 color2">Change password</button>

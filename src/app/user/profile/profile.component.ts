@@ -3,7 +3,6 @@ import {User} from "../../../shared/models/user.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {UserRestService} from "../../../service/userRest.service";
-import {GameDetails} from "../../../shared/models/gameDetails.model";
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteConfirmDialogComponent} from "../delete-confirm-dialog/delete-confirm-dialog.component";
 import {Router} from "@angular/router";
@@ -15,9 +14,8 @@ import {Router} from "@angular/router";
 })
 export class ProfileComponent {
 
-  user! : User;
+  user : User | undefined = undefined;
   triggerChangePassword : boolean = false;
-  dataSource! : GameDetails[];
 
   passwordForm = new FormGroup({
     oldPassword: new FormControl('', [Validators.required]),
