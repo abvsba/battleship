@@ -99,7 +99,7 @@ table {
 }
 
 @keyframes colorChange {
-  50%  {border-color: red; background-color: red}
+  50%  {border-color: red; background-color: #EE7674}
 }
 
 .miss,

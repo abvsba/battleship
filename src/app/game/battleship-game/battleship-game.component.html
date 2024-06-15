@@ -34,8 +34,8 @@
            class='ship'
            draggable="true"
            [style.width.px]="ship.length * 40"
-           [style.left.px]="50"
-           [style.top.px]="i*50 + 490"
+           [style.left.px]= "i < 3 ? '130' : '380'"
+           [style.top.px]="i < 3 ? i*50 + 490 : (i-3)*50 + 490"
            [ngClass]="{'ship-color': ship.isVisible,
            'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 

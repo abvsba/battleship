@@ -4,11 +4,15 @@
   background-position: center;
   background-repeat: no-repeat;
   height: 94vh;
-  opacity: 0.15;
+  opacity: 0.4;
 }
 
 .container {
-  justify-content: center;
+  width: inherit;
+  top: 340px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
   gap : 50px
 }
 
