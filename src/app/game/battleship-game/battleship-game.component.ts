@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren} from '@angular/core';
 import {Ship} from "../../../shared/models/ship.model";
 import {Board} from "../../../shared/models/board.model";
 import {Cell} from "../../../shared/models/cell.model";
@@ -120,7 +120,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       const initialCol = col - this.selectedDiv;
       const initialRow = row - this.selectedDiv;
 
-      let head = this.selectedShip.isHorizontal ? this.selfBoard.getCell(row, initialCol) : this.selfBoard.getCell(initialRow, col);
+      let head = this.selectedShip.isHorizontal ?
+        this.selfBoard.getCell(row, initialCol) : this.selfBoard.getCell(initialRow, col);
       let cellHTML = event.target as HTMLElement;
       const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
 
@@ -255,7 +256,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
           if (cell!.ship!.length === cell!.ship!.hit) {
             this.bot.sunkShip(cell!.ship!);
             cell!.ship!.isVisible = true;
-            this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
+            this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
             if (this.bot.checkBotWin()) {
               this.showFinalMessage('You lose');
             } else {
@@ -312,7 +313,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
           this.bot.sunkShip(cell!.ship!);
           cell!.ship!.isVisible = true;
-          this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = 'red';
+          this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
           if (this.bot.checkBotWin()) {
             this.showFinalMessage('You lose');
           } else {
@@ -513,7 +514,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   }
 
   showShipWhenAllHit(ship: Ship) {
-    this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'red';
+    this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
         this.rivalBoard.getCell(ship.head!.row, ship.head!.col + i).hit = undefined;
@@ -632,7 +633,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     const isHorizontal = this.selectedShip.isHorizontal;
 
     for (let i = 0; i < this.selectedShip.length; i++) {
-      board.getCell(head!.row + (isHorizontal ? 0 : i), head!.col + (isHorizontal ? i : 0)).ship = fill ? this.selectedShip : undefined;
+      board.getCell(head!.row + (isHorizontal ? 0 : i), head!.col + (isHorizontal ? i : 0)).ship =
+        fill ? this.selectedShip : undefined;
     }
   }
 
@@ -737,17 +739,17 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         let coordinate = this.getCoordinate(cellHTML, 0);
         this.setTopAndLeft(coordinate, shipHTML);
         cellHTML.appendChild(shipHTML);
-        this.emptyOrFillCellsWithShips(board, undefined, ship.head!);
+        this.emptyOrFillCellsWithShips(board, undefined, ship.head);
         this.selectedShip.oldHead = ship.head!;
         if (tableNumber === 0) {
           if (ship.hit === ship.length) {
-            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'red';
+            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = '#EE7674';
             this.bot.sunkShip(ship);
           } else {
             this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
           }
         } else if (ship.hit === ship.length) {
-          this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'red';
+          this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
         } else {
           this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
         }
