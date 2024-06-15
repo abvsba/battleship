@@ -1,3 +1,12 @@
+.background {
+  background-image: url('../../../assets/images/background2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 94vh;
+  opacity: 0.1;
+}
+
 table {
   position: relative;
   width: 401px;
@@ -11,8 +20,8 @@ table {
 
 .startGame {
   position: absolute;
-  top: 150px;
-  left: 124px;
+  top: 210px;
+  left: 130px;
   z-index: 7;
 }
 
@@ -20,9 +29,9 @@ table {
   display: flex;
   position: absolute;
   min-width: 1150px;
-  max-width: 1200px;
+  max-width: 1210px;
   height: fit-content;
-  top: 350px;
+  top: 330px;
   left: 50%;
   transform: translate(-50%, -50%);
   flex-direction: row;
@@ -35,7 +44,7 @@ table {
   width: 40px;
   height: 40px;
   border: 1px solid white;
-  background-color: #9DD1F1;
+  background-color: #ABD9F5;
 }
 
 .ship {
@@ -57,6 +66,14 @@ table {
   height: 100%;
   z-index: 5;
   background-color: transparent;
+}
+
+.title {
+  font-size: 17px;
+}
+
+.left {
+  margin-left: 22px;
 }
 
 .hide-ship {
@@ -82,7 +99,7 @@ table {
 }
 
 @keyframes colorChange {
-  50%  {border-color: red; background-color: #EE7674}
+  50%  {border-color: red; background-color: red}
 }
 
 .miss,
@@ -107,7 +124,7 @@ table {
 }
 
 .boom::after {
-  background-color: #EE7674;
+  background-color: red;
   animation: boom .3s ease-out forwards;
 }
 
@@ -116,7 +133,7 @@ table {
     background-color: white;
   }
   100% {
-    background-color: #EE7674;
+    background-color: red;
   }
 }
 
@@ -134,10 +151,6 @@ table {
 
 .cursor {
   cursor : move;
-}
-
-.disableClick {
-  pointer-events: none;
 }
 
 .vertical::after,
@@ -188,6 +201,7 @@ table {
 
 th {
   text-align: center;
-  color: deepskyblue;
+  color: #2364AA;
   font-size: large;
+  font-weight: 400;
 }

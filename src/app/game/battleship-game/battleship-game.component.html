@@ -1,3 +1,4 @@
+<div class = 'background'></div>
 
 <div class="table-container">
 
@@ -8,10 +9,11 @@
   </div>
 
   <div class="table-container-self">
+    <span class ='title left'>Your table</span>
     <table>
       <th *ngFor="let n of listNum">{{n}}</th>
       <tr *ngFor="let row of rowList">
-        <th>{{listChar[row]}}</th>
+        <th>{{listChar[row]}}&nbsp;</th>
         <td *ngFor="let col of colList"
             #self_cell
             class="board-td"
@@ -33,7 +35,7 @@
            draggable="true"
            [style.width.px]="ship.length * 40"
            [style.left.px]="50"
-           [style.top.px]="i*50 + 450"
+           [style.top.px]="i*50 + 490"
            [ngClass]="{'ship-color': ship.isVisible,
            'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
@@ -59,6 +61,7 @@
             (click) = "startGame()" mat-flat-button color="warn">Start game</button>
 
     <div [ngClass]="{'overlay': disableTableInteraction}">
+      <span class = 'title'>Enemy table</span>
       <table>
         <th *ngFor="let n of listNumRival">{{n}}</th>
         <tr *ngFor="let row of rowList">
@@ -71,7 +74,7 @@
             <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
             <div class="miss" *ngIf="rivalBoard.getCell(row, col).isMiss()"></div>
           </td>
-          <th>{{listChar[row]}}</th>
+          <th>&nbsp;{{listChar[row]}}</th>
         </tr>
       </table>
     </div>
@@ -82,7 +85,7 @@
          class='ship'
          [style.width.px]="ship.length * 40"
          [style.left.px]="50"
-         [style.top.px]="i*50 + 450"
+         [style.top.px]="i*50 + 490"
          [ngClass]="{'hide-ship': !ship.isVisible, 'ship-color': ship.isVisible,
           'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
     </div>
@@ -92,3 +95,5 @@
     <app-ship-stat (mapShipStatEvent)="mapShipStatRival = $event" [ships]="rivalShipList" [isRival]="true"></app-ship-stat>
   </div>
 </div>
+
+

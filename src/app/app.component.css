@@ -1,5 +1,6 @@
 .mat-toolbar {
   justify-content: space-between;
+  height: 6vh;
 }
 
 .center {
@@ -14,3 +15,6 @@
   color: #000;
   text-decoration: none;
 }
+
+
+

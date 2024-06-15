@@ -28,7 +28,7 @@ export class ProfileComponent {
   }
 
   logout() {
-    this.router.navigate(['/']).then(() => {
+    this.router.navigate(['/home']).then(() => {
       this.auth.logout();
     });
   }

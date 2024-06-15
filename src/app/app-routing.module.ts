@@ -4,12 +4,14 @@ import {BattleshipGameComponent} from "./game/battleship-game/battleship-game.co
 import {ProfileComponent} from "./user/profile/profile.component";
 import {AuthGuard} from "../service/authGuardService";
 import {UsersRankingComponent} from "./user/users-ranking/users-ranking.component";
+import {HomeComponent} from "./home/home.component";
 
 const routes: Routes = [
   { path: 'game', component: BattleshipGameComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   { path: 'ranking', component: UsersRankingComponent},
-  { path: '**', redirectTo : '' },
+  { path: 'home', component: HomeComponent},
+  { path: '**', redirectTo : 'home' },
 ];
 
 

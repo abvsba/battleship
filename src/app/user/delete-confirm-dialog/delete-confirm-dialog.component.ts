@@ -23,7 +23,7 @@ export class DeleteConfirmDialogComponent {
     this.auth.deleteUser(this.user.id).subscribe({
       next: () => {
         this.dialog.closeAll();
-        this.router.navigate(['/']).then(() => {
+        this.router.navigate(['/home']).then(() => {
           this.auth.logout();
         });
         this.snackBar.open('User delete successfully', 'Close', {

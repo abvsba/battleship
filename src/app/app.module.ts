@@ -27,6 +27,8 @@ import {MatRadioModule} from "@angular/material/radio";
 import {MatTableModule} from "@angular/material/table";
 import { UsersRankingComponent } from './user/users-ranking/users-ranking.component';
 import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delete-confirm-dialog.component';
+import { HomeComponent } from './home/home.component';
+import {NgOptimizedImage} from "@angular/common";
 
 
 @NgModule({
@@ -41,7 +43,8 @@ import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delet
     RestartGameDialogComponent,
     UsersRankingComponent,
     RestartGameDialogComponent,
-    DeleteConfirmDialogComponent
+    DeleteConfirmDialogComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +62,8 @@ import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delet
     BrowserAnimationsModule,
     MatMenuModule,
     MatRadioModule,
-    MatTableModule
+    MatTableModule,
+    NgOptimizedImage
   ],
   providers: [
     UserRestService,
