@@ -12,16 +12,25 @@ export class UsersRankingComponent {
   displayedColumns: string[] = ['Username', 'Date', 'Total hits', 'Time consumed', 'Result', 'Punctuation'];
   dataSource! : GameDetails[];
 
+  userRecordsBtn;
+
   constructor(private auth : UserRestService) {
-    this.auth.getGameHistory().subscribe((data: GameDetails[]) => {
-      this.dataSource = data;
-    });
+    this.getRecords();
+    this.userRecordsBtn = false;
   }
 
   getGameHistoryByUser() {
     this.auth.getGameUserHistory().subscribe((data: GameDetails[]) => {
       this.dataSource = data;
     });
+    this.userRecordsBtn = true;
+  }
+
+  getRecords() {
+    this.auth.getGameHistory().subscribe((data: GameDetails[]) => {
+      this.dataSource = data;
+    });
+    this.userRecordsBtn = false;
   }
 
   isAuthenticated(): boolean {

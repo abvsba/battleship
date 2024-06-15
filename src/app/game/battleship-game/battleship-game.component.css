@@ -185,3 +185,9 @@ table {
     transform: scaleY(1.5);
   }
 }
+
+th {
+  text-align: center;
+  color: deepskyblue;
+  font-size: large;
+}
