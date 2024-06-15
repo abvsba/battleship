@@ -1,0 +1,15 @@
+div {
+  display: grid;
+}
+
+img {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 900px;
+  height: 450px;
+}
+
+a {
+  color: white;
+  font-size: x-large;
+}
