@@ -60,7 +60,7 @@ export class UserRestService {
 
   logout() {
     this.user = undefined;
-    this.router.navigate(['']).then();
+    this.router.navigate(['/home']).then();
   }
 
   deleteUser(userid : number) {

@@ -1,3 +1,12 @@
+.background {
+  background-image: url('../../../assets/images/background2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 94vh;
+  opacity: 0.1;
+}
+
 table {
   position: relative;
   width: 401px;
@@ -11,8 +20,8 @@ table {
 
 .startGame {
   position: absolute;
-  top: 150px;
-  left: 124px;
+  top: 210px;
+  left: 130px;
   z-index: 7;
 }
 

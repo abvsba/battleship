@@ -13,7 +13,7 @@ export class AuthGuardService {
     if (this.auth.isAuthenticated()) {
       return true;
     } else {
-      this.router.navigate(['/']).then();
+      this.router.navigate(['/home']).then();
       return false;
     }
   }
