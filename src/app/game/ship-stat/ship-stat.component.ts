@@ -1,11 +1,20 @@
-import {Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 
 @Component({
   selector: 'app-ship-stat',
   templateUrl: './ship-stat.component.html',
   styleUrls: ['./ship-stat.component.css']
 })
-export class ShipStatComponent {
+export class ShipStatComponent implements AfterViewInit {
   @ViewChildren('ship_stat') shipStat!: QueryList<ElementRef>;
 
   @Input() ships: any[] = [];

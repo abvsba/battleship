@@ -23,11 +23,11 @@ export class DeleteConfirmDialogComponent {
     this.auth.deleteUser(this.user.id).subscribe({
       next: () => {
         this.dialog.closeAll();
-        this.snackBar.open('User delete successfully', 'Close', {
-          duration: 3000,
-        });
         this.router.navigate(['/']).then(() => {
           this.auth.logout();
+        });
+        this.snackBar.open('User delete successfully', 'Close', {
+          duration: 3000,
         });
       }
     });

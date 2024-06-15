@@ -8,6 +8,7 @@
   </div>
 
   <div class="table-container-self">
+    <span> Your table </span>
     <table>
       <tr *ngFor="let row of rowList">
         <td *ngFor="let col of colList"
@@ -58,6 +59,7 @@
 
     <div [ngClass]="{'overlay': disableTableInteraction}">
       <table>
+        <span> Enemy table </span>
         <tr *ngFor="let row of rowList">
           <td onKeyDown *ngFor="let col of colList"
               #rival_cell

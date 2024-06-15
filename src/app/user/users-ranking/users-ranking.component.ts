@@ -18,7 +18,7 @@ export class UsersRankingComponent {
     });
   }
 
-  getGameHistotyByUser() {
+  getGameHistoryByUser() {
     this.auth.getGameUserHistory().subscribe((data: GameDetails[]) => {
       this.dataSource = data;
     });
