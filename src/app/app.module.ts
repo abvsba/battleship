@@ -29,6 +29,7 @@ import { UsersRankingComponent } from './user/users-ranking/users-ranking.compon
 import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delete-confirm-dialog.component';
 import { HomeComponent } from './home/home.component';
 import {NgOptimizedImage} from "@angular/common";
+import { ManualDialogComponent } from './game/manual-dialog/manual-dialog.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import {NgOptimizedImage} from "@angular/common";
     UsersRankingComponent,
     RestartGameDialogComponent,
     DeleteConfirmDialogComponent,
-    HomeComponent
+    HomeComponent,
+    ManualDialogComponent
   ],
   imports: [
     BrowserModule,
