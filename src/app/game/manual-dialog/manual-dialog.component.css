@@ -1,5 +1,6 @@
 div {
   display: grid;
+  max-width: 900px;
 }
 
 img {
@@ -9,7 +10,13 @@ img {
   height: 450px;
 }
 
-a {
+.title {
+  font-size: xx-large;
+  color: #f9ff32;
+}
+
+.text {
   color: white;
-  font-size: x-large;
+  font-size: large;
+  padding: 10px;
 }
