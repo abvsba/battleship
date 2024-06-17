@@ -12,6 +12,7 @@ import {RestartGameDialogComponent} from "../restart-game-dialog/restart-game-di
 import {Subject, takeUntil} from "rxjs";
 import {UserRestService} from "../../../service/userRest.service";
 import {GameDetails} from "../../../shared/models/gameDetails.model";
+import {ManualDialogComponent} from "../manual-dialog/manual-dialog.component";
 
 @Component({
   selector: 'app-battleship-game',
@@ -760,6 +761,10 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       shipList = this.rivalShipList;
       tableNumber++;
     }
+  }
+
+  openManual() {
+    this.dialog.open(ManualDialogComponent);
   }
 
 }

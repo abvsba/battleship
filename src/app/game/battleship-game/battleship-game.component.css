@@ -9,8 +9,8 @@
 
 table {
   position: relative;
-  width: 401px;
-  height: 401px;
+  width: 441px;
+  height: 441px;
   border-collapse: collapse;
 }
 
@@ -99,7 +99,7 @@ table {
 }
 
 @keyframes colorChange {
-  50%  {border-color: red; background-color: red}
+  50%  {border-color: red; background-color: #EE7674}
 }
 
 .miss,
@@ -204,4 +204,10 @@ th {
   color: #2364AA;
   font-size: large;
   font-weight: 400;
+}
+
+.manual {
+  position: absolute;
+  right: 50px;
+  bottom: 100px;
 }

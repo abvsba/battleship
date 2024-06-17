@@ -1,0 +1,22 @@
+div {
+  display: grid;
+  max-width: 900px;
+}
+
+img {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 900px;
+  height: 450px;
+}
+
+.title {
+  font-size: xx-large;
+  color: #f9ff32;
+}
+
+.text {
+  color: white;
+  font-size: large;
+  padding: 10px;
+}
