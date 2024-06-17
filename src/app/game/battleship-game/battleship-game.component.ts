@@ -146,7 +146,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  onClickCell(event: Event, row: number, col: number) {
+  onClickCell(row: number, col: number) {
     const cell = this.rivalBoard.getCell(row, col);
     let ship = cell.ship!;
     this.totalMissileLaunch++;
@@ -157,7 +157,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         cell.hit = 'boom';
         this.totalPlayerHits++;
         this.audioMissileHit.load();
-        this.audioMissileHit.play().then(r => {});
+        this.audioMissileHit.play().then();
         if (ship.length === ship.hit) {
           this.showShipWhenAllHit(ship);
           if (this.checkWin(this.totalPlayerHits)) {
@@ -167,7 +167,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       } else {
         cell.hit = 'miss';
         this.audioMissileMissed.load();
-        this.audioMissileMissed.play().then(r => {});
+        this.audioMissileMissed.play().then();
       }
 
       this.turn = 1;
@@ -253,8 +253,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         }
         if (validShot == 1) {
           this.fireDirection = direction;
-          if (cell!.ship!.length === cell!.ship!.hit) {
-            this.bot.sunkShip(cell!.ship!);
+          if (cell?.ship!.length === cell?.ship!.hit) {
+            this.bot.sunkShip(cell?.ship!);
             cell!.ship!.isVisible = true;
             this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
             if (this.bot.checkBotWin()) {
@@ -310,8 +310,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
             }
             break;
         }
-        if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
-          this.bot.sunkShip(cell!.ship!);
+        if (validShot == 1 && (cell?.ship!.length === cell?.ship!.hit)) {
+          this.bot.sunkShip(cell?.ship!);
           cell!.ship!.isVisible = true;
           this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
           if (this.bot.checkBotWin()) {

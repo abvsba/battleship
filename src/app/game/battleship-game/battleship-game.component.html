@@ -68,7 +68,7 @@
           <td onKeyDown *ngFor="let col of colList"
               #rival_cell
               class="board-td"
-              (click)="onClickCell($event, row, col)"
+              (click)="onClickCell(row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col">
             <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
