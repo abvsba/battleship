@@ -10,11 +10,16 @@
 .table-container {
   width: 1000px;
   position: absolute;
-  top: 180px;
+  top: 120px;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
 .button {
-  margin-bottom: 20px;
+  position: absolute;
+}
+
+table {
+  position: absolute;
+  top: 50px;
 }

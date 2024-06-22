@@ -19,7 +19,7 @@ export class GameRestService {
   }
 
   saveGame(game : Game) {
-    return this.http.post<Ship[]>(this.baseurl + '/' + this.userId + '/games/save', { game : game })
+    return this.http.post(this.baseurl + '/' + this.userId + '/games/save', { game : game })
       .pipe(catchError(error => this.errorService.handleError(error)));
   }
 

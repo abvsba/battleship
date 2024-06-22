@@ -1,4 +1,11 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {Ship} from "../../../shared/models/ship.model";
 import {Board} from "../../../shared/models/board.model";
 import {Cell} from "../../../shared/models/cell.model";
@@ -19,7 +26,7 @@ import {ManualDialogComponent} from "../manual-dialog/manual-dialog.component";
   templateUrl: './battleship-game.component.html',
   styleUrls: ['./battleship-game.component.css']
 })
-export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
+export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   audioMissPath = '../../../assets/sounds/medium-explosion-40472.mp3';
   audioHitPath = '../../../assets/sounds/blast-37988.mp3';
 
@@ -85,6 +92,9 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       .subscribe(() => {
         this.openRestartGame();
     });
+
+    this.audioMissileMissed.volume = 0.15;
+    this.audioMissileHit.volume = 0.4;
   }
 
   ngOnDestroy() {
@@ -94,7 +104,6 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initShips();
-    this.positionShipRandomly();
   }
 
   initShips(): void {
@@ -131,6 +140,44 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       }
     }
     this.onDropOnShip = false;
+  }
+
+
+  onDropOnTopOfShip(event: DragEvent) {
+    if (this.disableTableInteraction) {
+      this.onDropOnShip = true;
+      let ship = this.selectedShip;
+      let div = event.target as HTMLElement;
+
+      if (this.selectedShip.type === (div.parentNode as HTMLElement).id) {
+
+        let dropInDiv = +(div).id;
+        const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
+        let isHorizontal = this.selectedShip.isHorizontal;
+
+        const row = isHorizontal ? ship.head!.row : ship.head!.row + dropInDiv - this.selectedDiv;
+        const col = isHorizontal ? ship.head!.col + dropInDiv - this.selectedDiv : ship.head!.col;
+
+        if (this.assertThereIsNoOverlap(this.selfBoard, new Cell(row, col), true)) {
+          ship.oldHead = new Cell(ship.head!.row, ship.head!.col);
+
+          if (isHorizontal) {
+            shipHTML.style.left = `${parseInt(shipHTML.style.left) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+            ship.head!.col = col;
+          } else {
+            shipHTML.style.top = `${parseInt(shipHTML.style.top) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
+            ship.head!.row = row;
+          }
+
+          this.emptyOrFillCellsWithShips(this.selfBoard, ship.oldHead, ship.head);
+          const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+          cellHTML.appendChild(shipHTML);
+        }
+        else {
+          this.changeShipColorWhenFailPositioning(shipHTML);
+        }
+      }
+    }
   }
 
 
@@ -179,6 +226,30 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+
+  onClickShip(ship: Ship) {
+    if (this.disableTableInteraction) {
+      this.selectedShip = ship;
+      let blockHeight = (this.cellWidth * ship.length);
+      let dimensionV = new Coordinate(this.cellWidth, blockHeight);
+      let dimensionH = new Coordinate(blockHeight, this.cellWidth);
+      let isHorizontal = ship.isHorizontal;
+      let dimension = isHorizontal ? dimensionV : dimensionH;
+
+      const shipHTML = this.mapShipSelf.get(ship.type);
+      if (this.assertShipIsInsideTable(ship.head!, true) &&
+        this.assertThereIsNoOverlap(this.selfBoard, ship.head!, false)) {
+
+        this.setWidthAndHeight(dimension, shipHTML);
+        ship.isHorizontal = !isHorizontal;
+        this.emptyAndFillCellsWithShipsWhenChangeDirection(ship, isHorizontal);
+      }
+      else {
+        this.changeShipColorWhenFailPositioning(shipHTML);
+      }
+    }
+  }
+
   checkValidCellToClick(cell: Cell, ship: Ship) {
       if (ship === undefined) {
         return cell.hit === undefined;
@@ -191,26 +262,18 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     return hits === 17;
   }
 
-  showFinalMessage(message: string) {
-    this.gameFinish = true;
-    clearInterval(this.gameTimePid);
-    this.dialog.open(FinishGameDialogComponent, {data:  message});
-    let result = message === 'You win' ? 'win' : 'lose';
-
-    if (!this.gameRestarted) {
-      this.saveGameDetails(result);
-    }
-  }
 
   saveGameDetails(result : string) {
-    const gameDetails : GameDetails = {
-      username: this.auth.getUser().username,
-      totalHits: this.totalMissileLaunch,
-      result : result,
-      timeConsumed : this.gameTime,
-      date: undefined
-    };
-    this.auth.saveGameDetail(gameDetails).subscribe();
+    if (this.auth.getUser()) {
+      const gameDetails: GameDetails = {
+        username: this.auth.getUser()?.username,
+        totalHits: this.totalMissileLaunch,
+        result: result,
+        timeConsumed: this.gameTime,
+        date: undefined
+      };
+      this.auth.saveGameDetail(gameDetails).subscribe();
+    }
   }
 
   botTurn() {
@@ -254,8 +317,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         }
         if (validShot == 1) {
           this.fireDirection = direction;
-          if (cell?.ship!.length === cell?.ship!.hit) {
-            this.bot.sunkShip(cell?.ship!);
+          if (cell!.ship!.length === cell!.ship!.hit) {
+            this.bot.sunkShip(cell!.ship!);
             cell!.ship!.isVisible = true;
             this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
             if (this.bot.checkBotWin()) {
@@ -311,24 +374,22 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
             }
             break;
         }
-        if (validShot == 1 && (cell?.ship!.length === cell?.ship!.hit)) {
-          this.bot.sunkShip(cell?.ship!);
+        if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
+          this.bot.sunkShip(cell!.ship!);
           cell!.ship!.isVisible = true;
           this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
           if (this.bot.checkBotWin()) {
             this.showFinalMessage('You lose');
           } else {
-            this.previousShots.forEach((c, index) => {
-              if (c.ship?.type === cell!.ship!.type) {
-                this.previousShots.splice(index);
-              }
-            });
+            this.previousShots = this.previousShots.filter((c) => c.ship?.type !== cell!.ship!.type);
           }
         } else if ((validShot == 0 || validShot == 2) && count < 2) {
-          this.previousShots = this.previousShots.reverse();
+          this.previousShots.reverse();
           count++;
         }
+
         if (count >= 2) {
+          this.previousShots = shuffle(this.previousShots);
           this.fireDirection = Math.floor(Math.random() * 4);
           count = 0;
         }
@@ -358,6 +419,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   //   }
   // }
 
+
   validShot(cell: Cell) {
     if (this.isValidCell(cell.getRow(), cell.getCol())) {
       let ship = cell.ship!;
@@ -378,70 +440,11 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     return 0;
   }
 
-  onClickShip(ship: Ship) {
-    if (this.disableTableInteraction) {
-      this.selectedShip = ship;
-      let blockHeight = (this.cellWidth * ship.length);
-      let dimensionV = new Coordinate(this.cellWidth, blockHeight);
-      let dimensionH = new Coordinate(blockHeight, this.cellWidth);
-      let isHorizontal = ship.isHorizontal;
-      let dimension = isHorizontal ? dimensionV : dimensionH;
-
-      const shipHTML = this.mapShipSelf.get(ship.type);
-      if (this.assertShipIsInsideTable(ship.head!, true) &&
-        this.assertThereIsNoOverlap(this.selfBoard, ship.head!, false)) {
-
-        this.setWidthAndHeight(dimension, shipHTML);
-        ship.isHorizontal = !isHorizontal;
-        this.emptyAndFillCellsWithShipsWhenChangeDirection(ship, isHorizontal);
-      }
-      else {
-        this.changeShipColorWhenFailPositioning(shipHTML);
-      }
-    }
-  }
-
-
-  onDropOnTopOfShip(event: DragEvent) {
-    if (this.disableTableInteraction) {
-      this.onDropOnShip = true;
-      let ship = this.selectedShip;
-      let div = event.target as HTMLElement;
-
-      if (this.selectedShip.type === (div.parentNode as HTMLElement).id) {
-
-        let dropInDiv = +(div).id;
-        const shipHTML = this.mapShipSelf.get(this.selectedShip.type);
-        let isHorizontal = this.selectedShip.isHorizontal;
-
-        const row = isHorizontal ? ship.head!.row : ship.head!.row + dropInDiv - this.selectedDiv;
-        const col = isHorizontal ? ship.head!.col + dropInDiv - this.selectedDiv : ship.head!.col;
-
-        if (this.assertThereIsNoOverlap(this.selfBoard, new Cell(row, col), true)) {
-          ship.oldHead = new Cell(ship.head!.row, ship.head!.col);
-
-          if (isHorizontal) {
-            shipHTML.style.left = `${parseInt(shipHTML.style.left) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
-            ship.head!.col = col;
-          } else {
-            shipHTML.style.top = `${parseInt(shipHTML.style.top) + (dropInDiv - this.selectedDiv) * this.cellWidth}px`;
-            ship.head!.row = row;
-          }
-
-          this.emptyOrFillCellsWithShips(this.selfBoard, ship.oldHead, ship.head);
-          const cellHTML = this.listSelfCell.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
-          cellHTML.appendChild(shipHTML);
-        }
-        else {
-          this.changeShipColorWhenFailPositioning(shipHTML);
-        }
-      }
-    }
-  }
-
 
   positionShipRandomly() {
     let ship = 0;
+    this.selectedDiv = 0;
+
     while (ship < this.rivalShipList.length) {
       const randomNumber = Math.floor(Math.random() * 100);
       let cellHTML = this.listRivalCell.get(randomNumber)?.nativeElement;
@@ -462,6 +465,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       }
     }
   }
+
 
   notShipAround(app: any, head: Cell) {
     let length = app.selectedShip.length;
@@ -500,6 +504,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     return true;
   }
 
+
   startGame() {
     this.disableTableInteraction = false;
 
@@ -512,7 +517,10 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     this.previousShots = [];
     this.totalPlayerHits = 0;
     this.gameFinish = false;
+
+    this.positionShipRandomly();
   }
+
 
   showShipWhenAllHit(ship: Ship) {
     this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
@@ -619,7 +627,6 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   }
 
 
-
   emptyOrFillCellsWithShips(board: Board, oldHead: Cell | undefined, head: Cell | undefined) {
     if (oldHead) {
       this.emptyOrFillCellsWithShipsAux(board, oldHead, false);
@@ -672,6 +679,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
   openSaveGame() {
     this.dialog.open(SaveGameDialogComponent,{
       data: {
+        isStartGame : !this.disableTableInteraction,
         totalPlayerHits : this.totalPlayerHits,
         fireDirection : this.fireDirection,
         previousShots : this.previousShots,
@@ -682,6 +690,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       },
     });
   }
+
 
   openRestartGame() {
     const dialogRef = this.dialog.open(RestartGameDialogComponent);
@@ -700,10 +709,11 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
       }
 
       this.fireDirection = data.gameData[0].fireDirection;
-      this.previousShots = data.previousShots;
+      this.previousShots = data.previousShots.map((cell : Cell) => new Cell(cell.row, cell.col));
       this.totalPlayerHits = data.gameData[0].totalHits;
 
       this.bot = new GameBot(this.selfBoard);
+
       this.restartGame(data.ships);
     });
   }
@@ -742,18 +752,9 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
         cellHTML.appendChild(shipHTML);
         this.emptyOrFillCellsWithShips(board, undefined, ship.head);
         this.selectedShip.oldHead = ship.head!;
-        if (tableNumber === 0) {
-          if (ship.hit === ship.length) {
-            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = '#EE7674';
-            this.bot.sunkShip(ship);
-          } else {
-            this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
-          }
-        } else if (ship.hit === ship.length) {
-          this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
-        } else {
-          this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
-        }
+
+        this.resetShipStat(tableNumber, ship);
+
       }
       board = this.rivalBoard;
       map = this.mapShipRival;
@@ -763,12 +764,77 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  showFinalMessage(message: string) {
+    this.gameFinish = true;
+    clearInterval(this.gameTimePid);
+    let dialogRef = this.dialog.open(FinishGameDialogComponent, {data:  message});
+
+    dialogRef.componentInstance.playAgain.subscribe(() => {
+      this.disableTableInteraction = true;
+      this.selfBoard = new Board();
+      this.rivalBoard = new Board();
+
+      this.listShipSelf.forEach((item, index) => {
+        if (!this.selfShipList[index].isHorizontal) {
+          item.nativeElement.style.height = '40px';
+        }
+        item.nativeElement.style.width = `${this.selfShipList[index].length * 40}px`;
+        item.nativeElement.style.left = `${index < 3 ? 30 : 280}px`;
+        item.nativeElement.style.top = `${index < 3 ? index*50 + 510 : (index-3)*50 + 510}px`;
+      });
+
+      for (let i = 0; i < this.selfShipList.length; i++) {
+        this.selfShipList[i].setProperty();
+        this.rivalShipList[i].setProperty();
+        this.resetShipStat(0, this.selfShipList[i]);
+        this.resetShipStat(1, this.rivalShipList[i]);
+      }
+      this.bot = new GameBot(this.selfBoard);
+      this.fireDirection = 0;
+      this.previousShots = [];
+
+      this.totalPlayerHits = 0;
+      this.totalMissileLaunch = 0;
+      this.gameFinish = false;
+      this.gameRestarted = false;
+      this.positionShipRandomly();
+    });
+
+    let result = message === 'You win' ? 'win' : 'lose';
+
+    if (!this.gameRestarted) {
+      this.saveGameDetails(result);
+    }
+  }
+
+
+  resetShipStat(tableNumber : number, ship: Ship) {
+    if (tableNumber === 0) {
+      if (ship.hit === ship.length) {
+        this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = '#EE7674';
+        this.bot.sunkShip(ship);
+      } else {
+        this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
+      }
+    } else if (ship.hit === ship.length) {
+      this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
+    } else {
+      this.mapShipStatRival.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
+    }
+  }
+
   openManual() {
     this.dialog.open(ManualDialogComponent);
   }
-
 }
 
+function shuffle(array : Cell[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 function initShips(): Ship[] {
   const carrier = new Ship('carrier', 5);

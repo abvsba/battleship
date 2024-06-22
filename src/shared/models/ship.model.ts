@@ -22,6 +22,14 @@ export class Ship {
     this.head = head;
   }
 
+  setProperty() {
+    this.isHorizontal = true;
+    this.isVisible = false;
+    this.hit = 0;
+    this.oldHead = undefined;
+    this.head = undefined
+  }
+
 }
 
 

@@ -35,7 +35,7 @@ export class UserRestService {
   }
 
   patchPassword(oldPassword: string, newPassword: string) {
-    return this.http.patch(this.BASE_URL + '/' + this.user!.id + '/password',
+    return this.http.patch(this.BASE_URL + '/' + this.user?.id + '/password',
       {oldPassword: oldPassword, newPassword: newPassword})
       .pipe(catchError(error => this.errorService.handleError(error)));
   }
@@ -45,14 +45,12 @@ export class UserRestService {
       .pipe(catchError(error => this.errorService.handleError(error)));
   }
 
-  getUsername(username: string) {
-    return this.http.get(this.BASE_URL + '/' + username + '/username')
-      .pipe(catchError(error => this.errorService.handleError(error)));
+  getUsername(username: string) : Observable<string> {
+    return this.http.get<string>(this.BASE_URL + '/' + username + '/username')
   }
 
-  getEmail(email: string) {
-    return this.http.get(this.BASE_URL + '/' + email + '/email')
-      .pipe(catchError(error => this.errorService.handleError(error)));
+  getEmail(email: string) : Observable<string> {
+    return this.http.get<string>(this.BASE_URL + '/' + email + '/email')
   }
 
   deleteUser(userid: number) {
@@ -62,13 +60,13 @@ export class UserRestService {
 
 
   saveGameDetail(gameDetails: GameDetails) {
-    return this.http.post(this.BASE_URL + '/' + this.user!.id + '/histories', gameDetails)
+    return this.http.post(this.BASE_URL + '/' + this.user?.id + '/histories', gameDetails)
       .pipe(catchError(error => this.errorService.handleError(error)));
 
   }
 
   getGameUserHistory() {
-    return this.http.get<GameDetails[]>(this.BASE_URL + '/' + this.user!.id + '/histories')
+    return this.http.get<GameDetails[]>(this.BASE_URL + '/' + this.user?.id + '/histories')
       .pipe(catchError(error => this.errorService.handleError(error)));
   }
 

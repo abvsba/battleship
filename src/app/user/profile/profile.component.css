@@ -9,7 +9,7 @@
 
 .container {
   width: inherit;
-  top: 340px;
+  top: 360px;
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
@@ -18,7 +18,7 @@
 
 .card {
   width: 350px;
-  background-color: #efefef;
+  background-color: white;
   border: none;
   transition: all 0.5s;
   border-radius: 20px;
