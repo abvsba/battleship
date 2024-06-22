@@ -35,7 +35,7 @@
            draggable="true"
            [style.width.px]="ship.length * 40"
            [style.left.px]= "i < 3 ? '130' : '380'"
-           [style.top.px]="i < 3 ? i*50 + 490 : (i-3)*50 + 490"
+           [style.top.px]="i < 3 ? i*50 + 510 : (i-3)*50 + 510"
            [ngClass]="{'ship-color': ship.isVisible,
            'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}"
 
@@ -68,7 +68,7 @@
           <td onKeyDown *ngFor="let col of colList"
               #rival_cell
               class="board-td"
-              (click)="onClickCell($event, row, col)"
+              (click)="onClickCell(row, col)"
               [attr.data-x]="row"
               [attr.data-y]="col">
             <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
@@ -85,7 +85,7 @@
          class='ship'
          [style.width.px]="ship.length * 40"
          [style.left.px]="50"
-         [style.top.px]="i*50 + 490"
+         [style.top.px]="i*50 + 510"
          [ngClass]="{'hide-ship': !ship.isVisible, 'ship-color': ship.isVisible,
           'horizontal': ship.isHorizontal, 'vertical': !ship.isHorizontal}">
     </div>
@@ -96,8 +96,7 @@
   </div>
 </div>
 
-<div class="manual">
-  <button (click)="openManual()" mat-flat-button color="warn">?</button>
-</div>
 
-
+<button class="manual" (click)="openManual()" mat-flat-button>
+  <mat-icon class = 'manual-button'>help</mat-icon>
+</button>

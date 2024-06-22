@@ -29,7 +29,7 @@ export class RestartGameDialogComponent implements OnInit{
     this.games$ = this.fetchAllGamesByUserId();
   }
 
-  fetchAllGamesByUserId(): Observable<Game[]> {
+  fetchAllGamesByUserId() : Observable<any> {
     return this.restService.fetchAllGamesByUserId();
   }
 

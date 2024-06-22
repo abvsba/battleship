@@ -9,7 +9,7 @@ import {UserRestService} from "../../../service/userRest.service";
 })
 export class UsersRankingComponent {
 
-  displayedColumns: string[] = ['Username', 'Date', 'Total hits', 'Time consumed', 'Result', 'Punctuation'];
+  displayedColumns: string[] = ['Username', 'Date', 'Total hits', 'Time consumed', 'Result', 'Speed'];
   dataSource! : GameDetails[];
 
   userRecordsBtn;
@@ -20,14 +20,14 @@ export class UsersRankingComponent {
   }
 
   getGameHistoryByUser() {
-    this.auth.getGameUserHistory().subscribe((data: GameDetails[]) => {
+    this.auth.getGameUserHistory().subscribe((data: any) => {
       this.dataSource = data;
     });
     this.userRecordsBtn = true;
   }
 
   getRecords() {
-    this.auth.getGameHistory().subscribe((data: GameDetails[]) => {
+    this.auth.getGameHistory().subscribe((data: any) => {
       this.dataSource = data;
     });
     this.userRecordsBtn = false;

@@ -1,5 +1,5 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {Component, EventEmitter, Inject, Output} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-finish-game-dialog',
@@ -9,9 +9,15 @@ import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 export class FinishGameDialogComponent {
 
   message: string;
+  @Output() playAgain = new EventEmitter<any>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) data: string) {
+  constructor(@Inject(MAT_DIALOG_DATA) data: string, private dialog: MatDialog,) {
     this.message = data;
+  }
+
+  play() {
+    this.playAgain.emit();
+    this.dialog.closeAll();
   }
 
 }

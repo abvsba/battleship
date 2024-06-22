@@ -21,12 +21,14 @@ export class SaveGameDialogComponent {
   selfBoard! : Board;
   rivalBoard! : Board;
   game! : Game;
+  isStartGame = true;
 
   constructor(@Inject(MAT_DIALOG_DATA) data: any,
               private restService: GameRestService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
 
+    this.isStartGame = data.isStartGame;
     this.selfBoard = data.selfBoard;
     this.rivalBoard = data.rivalBoard;
 
@@ -47,18 +49,25 @@ export class SaveGameDialogComponent {
   }
 
   saveGame() {
-    this.game.name = this.saveForm.value.name!
-    this.restService.saveGame(this.game).subscribe({
-      next: () => {
-        this.dialog.closeAll();
-        this.snackBar.open('Game saved successfully', 'Close', {
-          duration: 3000,
-        });
-      },
-      error: (error) => {
-        this.snackBar.open(error.error.message, 'Error', {duration: 3000});
-      }
-    });
+    if (this.isStartGame) {
+      this.game.name = this.saveForm.value.name!
+      this.restService.saveGame(this.game).subscribe({
+        next: () => {
+          this.dialog.closeAll();
+          this.snackBar.open('Game saved successfully', 'Close', {
+            duration: 3000,
+          });
+        },
+        error: (error) => {
+          this.snackBar.open(error.error.message, 'Error', {duration: 3000});
+        }
+      });
+    }
+    else {
+      this.snackBar.open('You need to start a game', 'Close', {duration: 3000});
+      this.dialog.closeAll();
+    }
+
   }
 
   isInvalid() {
