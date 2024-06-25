@@ -267,7 +267,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
         this.audioMissileHit.load();
         this.audioMissileHit.play().then();
         if (ship.length === ship.hit) {
-          this.showShipWhenAllHit(ship);
+          this.showShipWhenAllHit(ship, board);
           if (this.checkWin(this.totalPlayerHits[this.isMultiplayer ? 1 : 0])) {
             this.showFinalMessage('You win');
           }
@@ -595,14 +595,15 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   }
 
 
-  showShipWhenAllHit(ship: Ship) {
-    this.mapShipStatRival.get(ship.type)!.style.backgroundColor = '#EE7674';
+  showShipWhenAllHit(ship: Ship, board : Board) {
+    let map = board == this.selfBoard ? this.mapShipStatSelf : this.mapShipStatRival;
+    map.get(ship.type)!.style.backgroundColor = '#EE7674';
     for (let i = 0; i < ship.length; i++) {
       if (ship?.isHorizontal) {
-        this.rivalBoard.getCell(ship.head!.row, ship.head!.col + i).hit = undefined;
+        board.getCell(ship.head!.row, ship.head!.col + i).hit = undefined;
       }
       else {
-        this.rivalBoard.getCell(ship.head!.row + i, ship.head!.col).hit = undefined;
+        board.getCell(ship.head!.row + i, ship.head!.col).hit = undefined;
       }
     }
     ship.isVisible = true;
@@ -861,8 +862,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
   playAgain() {
     this.disableTableInteraction = true;
-    this.selfBoard = new Board();
-    this.rivalBoard = new Board();
+
 
     this.selfShipList.forEach(ship => ship.isVisible = false);
     this.positionShipRandomly(this.selfShipList);
@@ -882,6 +882,9 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
       }
       item.nativeElement.style.width = `${this.rivalShipList[index].length * 40}px`;
     });
+
+    this.selfBoard = new Board();
+    this.rivalBoard = new Board();
 
     for (let i = 0; i < this.selfShipList.length; i++) {
       this.selfShipList[i].setProperty();
