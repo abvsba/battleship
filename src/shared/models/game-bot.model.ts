@@ -147,26 +147,6 @@ export class GameBot {
       (i == this.boardSize - 1 && j == this.boardSize - 1));
   }
 
-  sunkShip(ship: Ship) {
-    if (ship.type === "patrolBoat") {
-      this.patrolBoat = false;
-    } else if (ship.type === "destroyer") {
-      this.destroyer = false;
-    } else if (ship.type === "submarine") {
-      this.submarine = false;
-    } else if (ship.type === "battleship") {
-      this.battleship = false;
-    } else if (ship.type === "carrier") {
-      this.carrier = false;
-    }
-
-    this.assessMap();
-  }
-
-  checkBotWin() {
-    return !(this.patrolBoat || this.destroyer || this.submarine || this.battleship || this.carrier);
-  }
-
   getHighestCellToFire() {
     let list: Cell[] = [];
 

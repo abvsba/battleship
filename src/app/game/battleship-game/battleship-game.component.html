@@ -1,6 +1,37 @@
 <div class = 'background'></div>
 
+<span class="game-title"> You are in mode {{mode}}</span>
+
+<div class="example-box" cdkDrag>
+  <div class="info-container">
+    <button *ngIf="isMultiplayer" class='button' (click)="changeGameMode()"
+            mat-flat-button color="warn">multiplayer
+    </button>
+    <button *ngIf="!isMultiplayer" class='button' (click)="changeGameMode()"
+            mat-flat-button color="warn">single-player
+    </button>
+
+    <div *ngIf="!checkAllShipsArePositioned()">
+      <br>
+      <span class='title'>Position the ships in the table to start the game</span>
+    </div>
+
+    <br>
+    <span class='title' *ngIf="isMultiplayer">
+      {{ enemyConnected ? 'Enemy connected' : 'Waiting an enemy' }} </span>
+
+    <br>
+    <span class='title' *ngIf="isMultiplayer && enemyConnected">
+      {{ enemyReady ? 'Enemy ready' : 'Waiting for enemy ready' }} </span>
+
+    <br>
+    <span class='title' *ngIf="isMultiplayer && bothPlayersReady">
+      {{ playerTurn ? 'Is your turn' : "Is enemy's turn" }} </span>
+  </div>
+</div>
+
 <div class="table-container">
+
 
   <div class="self-table">
     <div>
@@ -14,7 +45,7 @@
       <th *ngFor="let n of listNum">{{n}}</th>
       <tr *ngFor="let row of rowList">
         <th>{{listChar[row]}}&nbsp;</th>
-        <td *ngFor="let col of colList"
+        <td onKeyDown *ngFor="let col of colList"
             #self_cell
             class="board-td"
             (drop)="onDrop($event, row, col)"
@@ -57,7 +88,7 @@
 
   <div class="rival-table">
 
-    <button class="startGame" *ngIf ="selectedShip && checkAllShipsArePositioned() && disableTableInteraction"
+    <button class="startGame" *ngIf ="checkAllShipsArePositioned() && disableTableInteraction && (!isMultiplayer || this.enemyConnected)"
             (click) = "startGame()" mat-flat-button color="warn">Start game</button>
 
     <div [ngClass]="{'overlay': disableTableInteraction}">
@@ -68,9 +99,10 @@
           <td onKeyDown *ngFor="let col of colList"
               #rival_cell
               class="board-td"
-              (click)="onClickCell(row, col)"
+              (click)="onClickCell(row, col, this.rivalBoard)"
               [attr.data-x]="row"
-              [attr.data-y]="col">
+              [attr.data-y]="col"
+              [ngClass]="{'prueba': rivalBoard.getCell(row, col).hasShip()}">
             <div class="boom" *ngIf="rivalBoard.getCell(row, col).isBoom()"></div>
             <div class="miss" *ngIf="rivalBoard.getCell(row, col).isMiss()"></div>
           </td>

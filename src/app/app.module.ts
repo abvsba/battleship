@@ -30,6 +30,7 @@ import { DeleteConfirmDialogComponent } from './user/delete-confirm-dialog/delet
 import { HomeComponent } from './home/home.component';
 import {NgOptimizedImage} from "@angular/common";
 import { ManualDialogComponent } from './game/manual-dialog/manual-dialog.component';
+import {CdkDrag} from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -48,25 +49,26 @@ import { ManualDialogComponent } from './game/manual-dialog/manual-dialog.compon
     HomeComponent,
     ManualDialogComponent
   ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatDialogModule,
-    MatInputModule,
-    MatButtonToggleModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatSnackBarModule,
-    BrowserAnimationsModule,
-    MatMenuModule,
-    MatRadioModule,
-    MatTableModule,
-    NgOptimizedImage
-  ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatDialogModule,
+        MatInputModule,
+        MatButtonToggleModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatSnackBarModule,
+        BrowserAnimationsModule,
+        MatMenuModule,
+        MatRadioModule,
+        MatTableModule,
+        NgOptimizedImage,
+        CdkDrag
+    ],
   providers: [
     UserRestService,
     {
