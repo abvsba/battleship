@@ -31,7 +31,7 @@ table {
   min-width: 1150px;
   max-width: 1210px;
   height: fit-content;
-  top: 330px;
+  top: 350px;
   left: 50%;
   transform: translate(-50%, -50%);
   flex-direction: row;
@@ -39,6 +39,12 @@ table {
   justify-content: space-between;
 }
 
+.info-container {
+  position: absolute;
+  display : flex;
+  flex-direction: column;
+  margin: 20px;
+}
 
 .board-td {
   width: 40px;
@@ -73,7 +79,7 @@ table {
 }
 
 .left {
-  margin-left: 22px;
+  margin-left: 40px;
 }
 
 .hide-ship {
@@ -226,4 +232,40 @@ th {
 .manual:focus {
   outline: none;
   box-shadow: none
+}
+
+.game-title {
+  position: absolute;
+  top : 70px;
+  left: 20px;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+
+.example-box {
+  position: absolute;
+  top: 330px;
+  left: 50px;
+  width: 250px;
+  height: 300px;
+  border: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: move;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background: #fff;
+  border-radius: 4px;
+  z-index: 1;
+  transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+  0 2px 2px 0 rgba(0, 0, 0, 0.14),
+  0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.example-box:active {
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }

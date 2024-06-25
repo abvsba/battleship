@@ -20,6 +20,10 @@ import {Subject, takeUntil} from "rxjs";
 import {UserRestService} from "../../../service/userRest.service";
 import {GameDetails} from "../../../shared/models/gameDetails.model";
 import {ManualDialogComponent} from "../manual-dialog/manual-dialog.component";
+import {SocketService} from "../../../service/socketService";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {NavigationStart, Router} from "@angular/router";
+
 
 @Component({
   selector: 'app-battleship-game',
@@ -66,10 +70,18 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   fireDirection = 0;
   previousShots: Cell[] = [];
 
-  totalPlayerHits = 0;
+  totalPlayerHits = new Array(2).fill(0);
   totalMissileLaunch = 0;
   gameFinish = false;
   gameRestarted = false;
+
+  enemyConnected = false;
+  enemyReady = false;
+  bothPlayersReady = false;
+  playerTurn = true;
+  isMultiplayer = false;
+  trigger = false;
+  mode = 'Single-player'
 
   listNum: string[] = ['', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
   listNumRival: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', ''];
@@ -80,7 +92,12 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
   protected readonly Array = Array;
 
-  constructor(private event : EventService, private dialog: MatDialog, private auth : UserRestService) {
+  constructor(private event : EventService,
+              private dialog: MatDialog,
+              private auth : UserRestService,
+              private socketService: SocketService,
+              private snackBar: MatSnackBar) {
+
     this.event.saveGame$
       .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
@@ -98,6 +115,9 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   }
 
   ngOnDestroy() {
+    if (this.isMultiplayer) {
+      this.socketService.disconnectedEmit();
+    }
     this.destroyed.next();
     this.destroyed.complete();
   }
@@ -116,6 +136,40 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
     }
   }
+
+  changeGameMode() {
+    this.isMultiplayer = !this.isMultiplayer;
+
+    if (this.isMultiplayer) {
+      this.socketService.joinGame('default-game');
+      this.socketService.onEnemyConnected(() => {
+        console.log("enemy connected")
+        this.enemyConnected = true;
+      });
+
+      this.socketService.enemyReady(() => this.enemyReady = true);
+
+      this.socketService.disconnected(() => {
+        this.resetValueWhenDisconnected();
+          this.snackBar.open('Enemy disconnected, waiting another enemy', 'Close', {duration: 6000});
+      });
+    }
+    else {
+      this.resetValueWhenDisconnected();
+      this.snackBar.open('You are disconnected, returning to single-player mode', 'Close', {duration: 6000});
+      this.socketService.disconnectedEmit();
+    }
+    this.mode = this.isMultiplayer ? 'Multiplayer' : 'Single-player';
+  }
+
+  resetValueWhenDisconnected() {
+    this.enemyConnected = false;
+    this.enemyReady = false;
+    this.bothPlayersReady = false;
+    this.playerTurn = true;
+    this.playAgain()
+  }
+
 
   onDragStart(shipView: Ship) {
     if (this.disableTableInteraction) {
@@ -194,22 +248,31 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
     }
   }
 
-  onClickCell(row: number, col: number) {
-    const cell = this.rivalBoard.getCell(row, col);
+  onClickCell(row: number, col: number, board : Board, trigger : boolean = true) {
+    const cell = board.getCell(row, col);
     let ship = cell.ship!;
     this.totalMissileLaunch++;
 
-    if (!this.gameFinish && this.checkValidCellToClick(cell, ship)) {
+    if (!this.gameFinish && this.checkValidCellToClick(cell, ship) &&
+      (!this.isMultiplayer || (this.bothPlayersReady && this.playerTurn))) {
+      if (this.isMultiplayer && trigger) {
+        this.socketService.clickCell(row, col);
+        this.playerTurn = !this.playerTurn;
+      }
+
       if (cell.hasShip()) {
         ship.hit = ++ship.hit;
         cell.hit = 'boom';
-        this.totalPlayerHits++;
+        this.totalPlayerHits[this.playerTurn ? 0 : 1]++;
         this.audioMissileHit.load();
         this.audioMissileHit.play().then();
         if (ship.length === ship.hit) {
           this.showShipWhenAllHit(ship);
-          if (this.checkWin(this.totalPlayerHits)) {
+          if (this.checkWin(this.totalPlayerHits[this.isMultiplayer ? 1 : 0])) {
             this.showFinalMessage('You win');
+          }
+          else if (this.checkWin(this.totalPlayerHits[0])) {
+            this.showFinalMessage('You lose');
           }
         }
       } else {
@@ -220,7 +283,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
       this.turn = 1;
 
-      if (!this.gameFinish) {
+      if (!this.gameFinish && !this.isMultiplayer) {
         this.botTurn();
       }
     }
@@ -318,10 +381,10 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
         if (validShot == 1) {
           this.fireDirection = direction;
           if (cell!.ship!.length === cell!.ship!.hit) {
-            this.bot.sunkShip(cell!.ship!);
+            this.bot.assessMap();
             cell!.ship!.isVisible = true;
             this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
-            if (this.bot.checkBotWin()) {
+            if (this.checkWin(this.totalPlayerHits[1])) {
               this.showFinalMessage('You lose');
             } else {
               this.previousShots = [];
@@ -374,11 +437,11 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
             }
             break;
         }
-        if (validShot == 1 && (cell!.ship!.length === cell!.ship!.hit)) {
-          this.bot.sunkShip(cell!.ship!);
+        if (validShot == 1 && (cell?.ship!.length === cell?.ship!.hit)) {
+          this.bot.assessMap();
           cell!.ship!.isVisible = true;
           this.mapShipStatSelf.get(cell!.ship!.type)!.style.backgroundColor = '#EE7674';
-          if (this.bot.checkBotWin()) {
+          if (this.checkWin(this.totalPlayerHits[1])) {
             this.showFinalMessage('You lose');
           } else {
             this.previousShots = this.previousShots.filter((c) => c.ship?.type !== cell!.ship!.type);
@@ -400,25 +463,6 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
     this.turn = 0;
   }
 
-  // changeDirectionWhenHitMiss(fireDirection : number, validShot: number) {
-  //   if (validShot == 0 || validShot == 2) {
-  //     this.fireDirection = fireDirection;
-  //   }
-  // }
-  //
-  // prueba(lastShotCell : Cell, direction : number) {
-  //   const directionRowValues = [-1, 0, 1, 0];
-  //   const directionColValues = [0, -1, 0, 1];
-  //
-  //   let directionRow = directionRowValues[direction];
-  //   let directionCol = directionColValues[direction];
-  //
-  //   if (this.isValidCell(lastShotCell.getRow() + directionRow, lastShotCell.getCol() + directionCol)) {
-  //     let cell = this.bot.cellToFire(lastShotCell.getRow() + directionRow, lastShotCell.getCol() + directionCol);
-  //     return this.validShot(cell);
-  //   }
-  // }
-
 
   validShot(cell: Cell) {
     if (this.isValidCell(cell.getRow(), cell.getCol())) {
@@ -427,6 +471,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
         if (cell.hasShip()) {
           ship.hit = ++ship.hit;
           cell.hit = 'boom';
+          this.totalPlayerHits[1]++;
           this.previousShots.push(cell);
           return 1;
         } else {
@@ -441,26 +486,38 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   }
 
 
-  positionShipRandomly() {
+  positionShipRandomly(shipList : Ship[] = this.rivalShipList) {
+    let map, board, cell;
+    if (shipList == this.rivalShipList) {
+      map = this.mapShipRival;
+      board = this.rivalBoard;
+      cell = this.listRivalCell
+    }
+    else {
+      map = this.mapShipSelf;
+      board = this.selfBoard;
+      cell = this.listSelfCell
+    }
+
     let ship = 0;
     this.selectedDiv = 0;
 
-    while (ship < this.rivalShipList.length) {
+    while (ship < shipList.length) {
       const randomNumber = Math.floor(Math.random() * 100);
-      let cellHTML = this.listRivalCell.get(randomNumber)?.nativeElement;
+      let cellHTML = cell.get(randomNumber)?.nativeElement;
       let row = cellHTML.getAttribute('data-x');
       let col = cellHTML.getAttribute('data-y');
 
       const head = new Cell(+row, +col);
-      this.selectedShip = this.rivalShipList[ship];
-      const shipHTML = this.mapShipRival.get(this.selectedShip.type);
+      this.selectedShip = shipList[ship];
+      const shipHTML = map.get(this.selectedShip.type);
 
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.25) {
         this.selectedShip.isHorizontal = false;
         let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
         this.setWidthAndHeight(dimension, shipHTML);
       }
-      if (this.setLeftRight(this.rivalBoard, head, shipHTML, cellHTML, this.notShipAround)) {
+      if (this.setLeftRight(board, head, shipHTML, cellHTML, this.notShipAround)) {
         ship++;
       }
     }
@@ -506,19 +563,35 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
 
   startGame() {
-    this.disableTableInteraction = false;
-
-    this.gameTime = 0;
-    this.gameTimePid = window.setInterval(() => {
-      this.gameTime += 1;
-    }, 1000);
 
     this.turn = 0;
     this.previousShots = [];
-    this.totalPlayerHits = 0;
+    this.totalPlayerHits = new Array(2).fill(0);
     this.gameFinish = false;
+    this.disableTableInteraction = false;
 
-    this.positionShipRandomly();
+    if (this.isMultiplayer) {
+      this.socketService.playerReady(this.selfShipList);
+      this.socketService.bothPlayerReady( (ships, turn) => {
+        this.playerTurn = turn;
+        ships.forEach(ship =>
+          this.assignShip(this.rivalShipList, ship, this.mapShipRival, this.listRivalCell, this.rivalBoard));
+
+        this.bothPlayersReady = true;
+      });
+      this.socketService.clickCellReply((row, col) => {
+        this.playerTurn = !this.playerTurn;
+        this.onClickCell(row, col, this.selfBoard, false);
+      });
+    }
+    else {
+      this.gameTime = 0;
+      this.gameTimePid = window.setInterval(() => {
+        this.gameTime += 1;
+      }, 1000);
+
+      this.positionShipRandomly();
+    }
   }
 
 
@@ -680,7 +753,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
     this.dialog.open(SaveGameDialogComponent,{
       data: {
         isStartGame : !this.disableTableInteraction,
-        totalPlayerHits : this.totalPlayerHits,
+        totalPlayerHits : this.totalPlayerHits[0],
         fireDirection : this.fireDirection,
         previousShots : this.previousShots,
         selfShip: this.selfShipList,
@@ -710,13 +783,15 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
       this.fireDirection = data.gameData[0].fireDirection;
       this.previousShots = data.previousShots.map((cell : Cell) => new Cell(cell.row, cell.col));
-      this.totalPlayerHits = data.gameData[0].totalHits;
+      this.totalPlayerHits[0] = data.gameData[0].totalHits;
+      this.totalPlayerHits[1] = data.ships[1].reduce((totalHits : number, ship : Ship) => totalHits + ship.hit, 0);
 
       this.bot = new GameBot(this.selfBoard);
 
       this.restartGame(data.ships);
     });
   }
+
 
   restartGame(tables: Ship[][]) {
     this.gameFinish = false;
@@ -732,29 +807,8 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
 
     for (let table of tables) {
       for (let ship of table) {
-        this.selectedShip = shipList.find(selfShip => selfShip.type === ship.type)!;
-        Object.assign(this.selectedShip, ship);
-
-        const shipHTML = map.get(ship.type);
-        const cellHTML = cells.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
-
-        let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
-        if (!ship.isHorizontal) {
-          this.setWidthAndHeight(dimension, shipHTML);
-        }
-        else{
-          shipHTML.style.width = dimension.getTopString();
-          shipHTML.style.height = dimension.getLeftString();
-        }
-
-        let coordinate = this.getCoordinate(cellHTML, 0);
-        this.setTopAndLeft(coordinate, shipHTML);
-        cellHTML.appendChild(shipHTML);
-        this.emptyOrFillCellsWithShips(board, undefined, ship.head);
-        this.selectedShip.oldHead = ship.head!;
-
+        this.assignShip(shipList, ship, map, cells, board);
         this.resetShipStat(tableNumber, ship);
-
       }
       board = this.rivalBoard;
       map = this.mapShipRival;
@@ -762,7 +816,32 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
       shipList = this.rivalShipList;
       tableNumber++;
     }
+    this.previousShots = this.previousShots.map((cell) => this.selfBoard.getCell(cell.row, cell.col));
   }
+
+  assignShip(shipList : Ship[], ship : Ship, map : Map<any, any>, cells : QueryList<ElementRef>, board: Board ) {
+    this.selectedShip = shipList.find(selfShip => selfShip.type === ship.type)!;
+    Object.assign(this.selectedShip, ship);
+
+    const shipHTML = map.get(ship.type);
+    const cellHTML = cells.get(ship.head!.row * 10 + ship.head!.col)?.nativeElement;
+
+    let dimension = new Coordinate(this.cellWidth, (this.cellWidth * this.selectedShip.length));
+    if (!ship.isHorizontal) {
+      this.setWidthAndHeight(dimension, shipHTML);
+    }
+    else{
+      shipHTML.style.width = dimension.getTopString();
+      shipHTML.style.height = dimension.getLeftString();
+    }
+
+    let coordinate = this.getCoordinate(cellHTML, 0);
+    this.setTopAndLeft(coordinate, shipHTML);
+    cellHTML.appendChild(shipHTML);
+    this.emptyOrFillCellsWithShips(board, undefined, ship.head);
+    this.selectedShip.oldHead = ship.head!;
+  }
+
 
   showFinalMessage(message: string) {
     this.gameFinish = true;
@@ -770,34 +849,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
     let dialogRef = this.dialog.open(FinishGameDialogComponent, {data:  message});
 
     dialogRef.componentInstance.playAgain.subscribe(() => {
-      this.disableTableInteraction = true;
-      this.selfBoard = new Board();
-      this.rivalBoard = new Board();
-
-      this.listShipSelf.forEach((item, index) => {
-        if (!this.selfShipList[index].isHorizontal) {
-          item.nativeElement.style.height = '40px';
-        }
-        item.nativeElement.style.width = `${this.selfShipList[index].length * 40}px`;
-        item.nativeElement.style.left = `${index < 3 ? 30 : 280}px`;
-        item.nativeElement.style.top = `${index < 3 ? index*50 + 510 : (index-3)*50 + 510}px`;
-      });
-
-      for (let i = 0; i < this.selfShipList.length; i++) {
-        this.selfShipList[i].setProperty();
-        this.rivalShipList[i].setProperty();
-        this.resetShipStat(0, this.selfShipList[i]);
-        this.resetShipStat(1, this.rivalShipList[i]);
-      }
-      this.bot = new GameBot(this.selfBoard);
-      this.fireDirection = 0;
-      this.previousShots = [];
-
-      this.totalPlayerHits = 0;
-      this.totalMissileLaunch = 0;
-      this.gameFinish = false;
-      this.gameRestarted = false;
-      this.positionShipRandomly();
+      this.playAgain();
     });
 
     let result = message === 'You win' ? 'win' : 'lose';
@@ -807,12 +859,51 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
     }
   }
 
+  playAgain() {
+    this.disableTableInteraction = true;
+    this.selfBoard = new Board();
+    this.rivalBoard = new Board();
+
+    this.selfShipList.forEach(ship => ship.isVisible = false);
+    this.positionShipRandomly(this.selfShipList);
+
+    this.listShipSelf.forEach((item, index) => {
+      if (!this.selfShipList[index].isHorizontal) {
+        item.nativeElement.style.height = '40px';
+      }
+      item.nativeElement.style.width = `${this.selfShipList[index].length * 40}px`;
+      item.nativeElement.style.left = `${index < 3 ? 40 : 290}px`;
+      item.nativeElement.style.top = `${index < 3 ? index*50 + 485 : (index-3)*50 + 485}px`;
+    });
+
+    this.listShipRival.forEach((item, index) => {
+      if (!this.rivalShipList[index].isHorizontal) {
+        item.nativeElement.style.height = '40px';
+      }
+      item.nativeElement.style.width = `${this.rivalShipList[index].length * 40}px`;
+    });
+
+    for (let i = 0; i < this.selfShipList.length; i++) {
+      this.selfShipList[i].setProperty();
+      this.rivalShipList[i].setProperty();
+      this.resetShipStat(0, this.selfShipList[i]);
+      this.resetShipStat(1, this.rivalShipList[i]);
+    }
+    this.bot = new GameBot(this.selfBoard);
+    this.fireDirection = 0;
+    this.previousShots = [];
+
+    this.totalPlayerHits = new Array(2).fill(0)
+    this.totalMissileLaunch = 0;
+    this.gameFinish = false;
+    this.gameRestarted = false;
+  }
+
 
   resetShipStat(tableNumber : number, ship: Ship) {
     if (tableNumber === 0) {
       if (ship.hit === ship.length) {
         this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = '#EE7674';
-        this.bot.sunkShip(ship);
       } else {
         this.mapShipStatSelf.get(ship.type)!.style.backgroundColor = 'rgba(100, 149, 237, 0.35)';
       }
@@ -826,6 +917,7 @@ export class BattleshipGameComponent implements AfterViewInit, OnDestroy{
   openManual() {
     this.dialog.open(ManualDialogComponent);
   }
+
 }
 
 function shuffle(array : Cell[]) {
